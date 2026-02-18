@@ -1,0 +1,90 @@
+<div class="staff-container">
+  <div class="header">
+    <h1>Staff Management</h1>
+    <button class="btn-primary" routerLink="/admin/staff/create">
+      <span>+</span> Add New Staff
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading staff...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error() }}</p>
+      <button class="btn-secondary" (click)="loadStaffs()">Retry</button>
+    </div>
+  }
+
+  <!-- Staff List -->
+  @if (!loading() && !error()) {
+    @if (staffs().length === 0) {
+      <div class="empty-state">
+        <p>No staff members found. Click "Add New Staff" to create one.</p>
+      </div>
+    } @else {
+      <div class="staff-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Position</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (staff of staffs(); track staff.id) {
+              <tr>
+                <td>{{ staff.id }}</td>
+                <td>
+                  <span class="position-badge">{{ staff.position }}</span>
+                </td>
+                <td>
+                  <span class="staff-name">{{ staff.firstName }}</span>
+                </td>
+                <td>{{ staff.lastName }}</td>
+                <td>{{ staff.email }}</td>
+                <td>
+                  <span class="department-badge">
+                    {{ staff.departmentName || 'N/A' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="role-badge">
+                    {{ staff.roleName || 'N/A' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button 
+                    class="btn-edit" 
+                    (click)="editStaff(staff.id)"
+                    title="Edit staff">
+                    ✏️ Edit
+                  </button>
+                  <button 
+                    class="btn-delete" 
+                    (click)="deleteStaff(staff.id)"
+                    title="Delete staff">
+                    🗑️ Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>
