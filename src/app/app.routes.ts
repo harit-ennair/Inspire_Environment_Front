@@ -39,6 +39,18 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/role/rolesForm/roles').then(m => m.RolesForm)
       },
       {
+        path: 'departments',
+        loadComponent: () => import('./features/admin/departments/departmentsList/departments').then(m => m.DepartmentsList)
+      },
+      {
+        path: 'departments/create',
+        loadComponent: () => import('./features/admin/departments/departmentsForm/departments').then(m => m.DepartmentsForm)
+      },
+      {
+        path: 'departments/edit/:id',
+        loadComponent: () => import('./features/admin/departments/departmentsForm/departments').then(m => m.DepartmentsForm)
+      },
+      {
         path: 'users',
         loadComponent: () => import('./features/admin/users/users').then(m => m.Users)
       }

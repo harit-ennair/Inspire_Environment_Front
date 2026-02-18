@@ -1,0 +1,72 @@
+<div class="departments-container">
+  <div class="header">
+    <h1>Departments Management</h1>
+    <button class="btn-primary" routerLink="/admin/departments/create">
+      <span>+</span> Add New Department
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading departments...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error() }}</p>
+      <button class="btn-secondary" (click)="loadDepartments()">Retry</button>
+    </div>
+  }
+
+  <!-- Departments List -->
+  @if (!loading() && !error()) {
+    @if (departments().length === 0) {
+      <div class="empty-state">
+        <p>No departments found. Click "Add New Department" to create one.</p>
+      </div>
+    } @else {
+      <div class="departments-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Department Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (department of departments(); track department.id) {
+              <tr>
+                <td>{{ department.id }}</td>
+                <td>
+                  <span class="department-name">{{ department.name }}</span>
+                </td>
+                <td>{{ department.description || 'No description' }}</td>
+                <td class="actions">
+                  <button 
+                    class="btn-edit" 
+                    (click)="editDepartment(department.id)"
+                    title="Edit department">
+                    ✏️ Edit
+                  </button>
+                  <button 
+                    class="btn-delete" 
+                    (click)="deleteDepartment(department.id)"
+                    title="Delete department">
+                    🗑️ Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

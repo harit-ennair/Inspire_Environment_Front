@@ -1,0 +1,78 @@
+<div class="form-container">
+  <div class="form-header">
+    <button class="btn-back" (click)="router.navigate(['/admin/departments'])" title="Back to departments">
+      ← Back
+    </button>
+    <h1>{{ isEdit() ? 'Edit Department' : 'Create New Department' }}</h1>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading department data...</p>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading()) {
+    <div class="form-card">
+      <form (ngSubmit)="save()" #departmentForm="ngForm">
+        <!-- Department Name -->
+        <div class="form-group">
+          <label for="name" class="form-label">
+            Department Name <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-input"
+            [(ngModel)]="department().name"
+            required
+            placeholder="Enter department name (e.g., IT, HR, Finance)"
+            #name="ngModel"
+          />
+          @if (name.invalid && (name.dirty || name.touched)) {
+            <div class="error-text">
+              Department name is required
+            </div>
+          }
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description" class="form-label">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            class="form-textarea"
+            [(ngModel)]="department().description"
+            rows="4"
+            placeholder="Enter a brief description of this department's responsibilities"
+          ></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            (click)="router.navigate(['/admin/departments'])"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="!departmentForm.form.valid"
+          >
+            {{ isEdit() ? 'Update Department' : 'Create Department' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
