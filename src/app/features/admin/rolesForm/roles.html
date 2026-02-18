@@ -1,0 +1,78 @@
+<div class="form-container">
+  <div class="form-header">
+    <button class="btn-back" (click)="router.navigate(['/admin/roles'])" title="Back to roles">
+      ← Back
+    </button>
+    <h1>{{ isEdit() ? 'Edit Role' : 'Create New Role' }}</h1>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading role data...</p>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading()) {
+    <div class="form-card">
+      <form (ngSubmit)="save()" #roleForm="ngForm">
+        <!-- Role Name -->
+        <div class="form-group">
+          <label for="name" class="form-label">
+            Role Name <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-input"
+            [(ngModel)]="role().name"
+            required
+            placeholder="Enter role name (e.g., Admin, Manager, User)"
+            #name="ngModel"
+          />
+          @if (name.invalid && (name.dirty || name.touched)) {
+            <div class="error-text">
+              Role name is required
+            </div>
+          }
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description" class="form-label">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            class="form-textarea"
+            [(ngModel)]="role().description"
+            rows="4"
+            placeholder="Enter a brief description of this role's responsibilities"
+          ></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            (click)="router.navigate(['/admin/roles'])"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="!roleForm.form.valid"
+          >
+            {{ isEdit() ? 'Update Role' : 'Create Role' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

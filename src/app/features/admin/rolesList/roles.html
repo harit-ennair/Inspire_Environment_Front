@@ -1,0 +1,72 @@
+<div class="roles-container">
+  <div class="header">
+    <h1>Roles Management</h1>
+    <button class="btn-primary" routerLink="/admin/roles/create">
+      <span>+</span> Add New Role
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading roles...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error() }}</p>
+      <button class="btn-secondary" (click)="loadRoles()">Retry</button>
+    </div>
+  }
+
+  <!-- Roles List -->
+  @if (!loading() && !error()) {
+    @if (roles().length === 0) {
+      <div class="empty-state">
+        <p>No roles found. Click "Add New Role" to create one.</p>
+      </div>
+    } @else {
+      <div class="roles-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Role Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (role of roles(); track role.id) {
+              <tr>
+                <td>{{ role.id }}</td>
+                <td>
+                  <span class="role-name">{{ role.name }}</span>
+                </td>
+                <td>{{ role.description || 'No description' }}</td>
+                <td class="actions">
+                  <button 
+                    class="btn-edit" 
+                    (click)="editRole(role.id)"
+                    title="Edit role">
+                    ✏️ Edit
+                  </button>
+                  <button 
+                    class="btn-delete" 
+                    (click)="deleteRole(role.id)"
+                    title="Delete role">
+                    🗑️ Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>
