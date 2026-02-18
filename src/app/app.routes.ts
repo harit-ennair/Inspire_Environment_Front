@@ -51,6 +51,18 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/departments/departmentsForm/departments').then(m => m.DepartmentsForm)
       },
       {
+        path: 'students',
+        loadComponent: () => import('./features/admin/students/studentsList/students').then(m => m.StudentsList)
+      },
+      {
+        path: 'students/create',
+        loadComponent: () => import('./features/admin/students/studentsForm/students').then(m => m.StudentsForm)
+      },
+      {
+        path: 'students/edit/:id',
+        loadComponent: () => import('./features/admin/students/studentsForm/students').then(m => m.StudentsForm)
+      },
+      {
         path: 'users',
         loadComponent: () => import('./features/admin/users/users').then(m => m.Users)
       }

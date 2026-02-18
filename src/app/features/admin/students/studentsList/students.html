@@ -1,0 +1,84 @@
+<div class="students-container">
+  <div class="header">
+    <h1>Students Management</h1>
+    <button class="btn-primary" routerLink="/admin/students/create">
+      <span>+</span> Add New Student
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading students...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error() }}</p>
+      <button class="btn-secondary" (click)="loadStudents()">Retry</button>
+    </div>
+  }
+
+  <!-- Students List -->
+  @if (!loading() && !error()) {
+    @if (students().length === 0) {
+      <div class="empty-state">
+        <p>No students found. Click "Add New Student" to create one.</p>
+      </div>
+    } @else {
+      <div class="students-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Student Code</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (student of students(); track student.id) {
+              <tr>
+                <td>{{ student.id }}</td>
+                <td>
+                  <span class="student-code">{{ student.studentCode }}</span>
+                </td>
+                <td>
+                  <span class="student-name">{{ student.firstName }}</span>
+                </td>
+                <td>{{ student.lastName }}</td>
+                <td>{{ student.email }}</td>
+                <td>
+                  <span class="department-badge">
+                    {{ student.departmentName || 'N/A' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button 
+                    class="btn-edit" 
+                    (click)="editStudent(student.id)"
+                    title="Edit student">
+                    ✏️ Edit
+                  </button>
+                  <button 
+                    class="btn-delete" 
+                    (click)="deleteStudent(student.id)"
+                    title="Delete student">
+                    🗑️ Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>
