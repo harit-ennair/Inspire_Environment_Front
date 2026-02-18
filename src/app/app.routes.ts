@@ -28,15 +28,15 @@ export const routes: Routes = [
       },
       {
         path: 'roles',
-        loadComponent: () => import('./features/admin/rolesList/roles').then(m => m.RolesList)
+        loadComponent: () => import('./features/admin/role/rolesList/roles').then(m => m.RolesList)
       },
       {
         path: 'roles/create',
-        loadComponent: () => import('./features/admin/rolesForm/roles').then(m => m.RolesForm)
+        loadComponent: () => import('./features/admin/role/rolesForm/roles').then(m => m.RolesForm)
       },
       {
         path: 'roles/edit/:id',
-        loadComponent: () => import('./features/admin/rolesForm/roles').then(m => m.RolesForm)
+        loadComponent: () => import('./features/admin/role/rolesForm/roles').then(m => m.RolesForm)
       },
       {
         path: 'users',

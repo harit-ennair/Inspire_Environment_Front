@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RolesService } from '../../../../app/core/services/api/roles.service';
+import { RolesService } from '../../../../core/services/api/roles.service';
 
 @Component({
   selector: 'app-roles-form',
