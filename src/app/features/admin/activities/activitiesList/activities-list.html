@@ -1,4 +1,5 @@
 <div class="page-container">
+  <a routerLink="/admin/dashboard" class="back-btn">← Back to Dashboard</a>
   <!-- Header -->
   <div class="page-header">
     <div class="header-left">
@@ -84,8 +85,9 @@
                 <td>
                   <span class="status-badge status-active">{{ activity.type || '—' }}</span>
                 </td>
-                <td>{{ activity.startDate | date:'medium' }}</td>
-                <td>{{ activity.endDate | date:'medium' }}</td>
+                <td>{{ activity.startDate | date:'dd MMM yyyy | HH:mm' }}</td>
+                <td>{{ activity.endDate | date:'dd MMM yyyy | HH:mm' }}</td>
+
                 <td>
                   <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
                     {{ activity.status || 'Active' }}

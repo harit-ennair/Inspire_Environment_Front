@@ -1,0 +1,128 @@
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">📋 Attendance Records</h1>
+      @if (activity()) {
+        <p class="page-subtitle activity-name">{{ activity()!.title }}</p>
+        <div class="activity-meta">
+          <span class="meta-badge">
+            <span class="meta-label">👤 Manager:</span>
+            <span class="meta-value">{{ activity()!.managedBy || activity()!.staff?.user?.firstName + ' ' + activity()!.staff?.user?.lastName || '—' }}</span>
+          </span>
+          <span class="meta-badge">
+            <span class="meta-label">🏢 Department:</span>
+            <span class="meta-value">{{ activity()!.staff?.user?.departmentName || '—' }}</span>
+          </span>
+        </div>
+      } @else {
+        <p class="page-subtitle">Manage student attendance for this activity</p>
+      }
+    </div>
+    <div class="header-actions">
+      <a [routerLink]="['/admin/activities', activityId()]" class="btn btn-secondary">← Back to Activity Details</a>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading attendance records...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <span>⚠️ {{ error() }}</span>
+      <button class="btn btn-sm btn-secondary" (click)="loadAttendances(activityId())">Retry</button>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error()) {
+    @if (attendances().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🗒️</div>
+        <h3>No attendance records found</h3>
+        <p>No students have checked in for this activity yet.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Check-in Time</th>
+              <th>Status</th>
+              <th>Update Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of attendances(); track record.id; let i = $index) {
+              <tr>
+                <td class="row-index">{{ i + 1 }}</td>
+                <td class="student-cell">
+                  <span class="avatar">{{ getStudentInitial(record) }}</span>
+                  <div class="student-info">
+                    <span class="student-name">{{ getStudentName(record) }}</span>
+                    <span class="student-email">{{ record.student?.user?.email ?? '' }}</span>
+                  </div>
+                </td>
+                <td class="time-cell">
+                  @if (editingTimeId() === record.id) {
+                    <div class="time-edit">
+                      <input
+                        type="datetime-local"
+                        class="time-input"
+                        [ngModel]="checkInTimeValue()"
+                        (ngModelChange)="checkInTimeValue.set($event)" />
+                      <button
+                        class="btn btn-sm btn-primary"
+                        [disabled]="settingTimeId() === record.id"
+                        (click)="saveCheckInTime(record.id)">
+                        {{ settingTimeId() === record.id ? 'Saving…' : 'Save' }}
+                      </button>
+                      <button class="btn btn-sm btn-secondary" (click)="cancelEditCheckInTime()">✕</button>
+                    </div>
+                  } @else {
+                    <div class="time-display">
+                      <span>{{ record.checkInTime ? (record.checkInTime | date: 'dd MMM yyyy, HH:mm') : '—' }}</span>
+                      <button class="btn btn-sm btn-ghost" (click)="startEditCheckInTime(record)">✏️</button>
+                    </div>
+                  }
+                </td>
+                <td>
+                  <span class="badge {{ getStatusClass(record.status) }}">{{ record.status }}</span>
+                </td>
+                <td class="actions-cell">
+                  @for (status of statuses; track status) {
+                    @if (status !== record.status) {
+                      <button
+                        class="btn btn-sm status-btn {{ getStatusClass(status) }}-btn"
+                        [disabled]="updatingId() === record.id"
+                        (click)="updateStatus(record.id, status)">
+                        {{ status }}
+                      </button>
+                    }
+                  }
+                  @if (updatingId() === record.id) {
+                    <span class="updating-hint">Saving...</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <span>Total records: <strong>{{ attendances().length }}</strong></span>
+      </div>
+    }
+  }
+
+</div>

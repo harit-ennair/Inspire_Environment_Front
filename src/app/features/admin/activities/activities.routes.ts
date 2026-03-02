@@ -41,4 +41,9 @@ export const ACTIVITIES_ROUTES: Routes = [
     loadComponent: () =>
       import('./activityAssign/activity-assign').then(m => m.ActivityAssign),
   },
+  {
+    path: ':id/attendance',
+    loadComponent: () =>
+      import('./activities-attendance/activities-attendance').then(m => m.ActivitiesAttendance),
+  },
 ];

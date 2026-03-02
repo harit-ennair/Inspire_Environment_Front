@@ -1,0 +1,236 @@
+<div class="presence-container">
+
+  <a routerLink="/admin/dashboard" class="back-btn">← Back to Dashboard</a>
+
+  <div class="header">
+    <div>
+      <h1>Presence Management</h1>
+      <p class="subtitle">Monitor and manage student attendance records.</p>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card stat-blue">
+      <span class="stat-icon">📋</span>
+      <div>
+        <span class="stat-value">{{ presences().length }}</span>
+        <span class="stat-label">Total Records</span>
+      </div>
+    </div>
+    <div class="stat-card stat-green">
+      <span class="stat-icon">✅</span>
+      <div>
+        <span class="stat-value">{{ totalPresent }}</span>
+        <span class="stat-label">Present</span>
+      </div>
+    </div>
+    <div class="stat-card stat-red">
+      <span class="stat-icon">❌</span>
+      <div>
+        <span class="stat-value">{{ totalAbsent }}</span>
+        <span class="stat-label">Absent</span>
+      </div>
+    </div>
+    <div class="stat-card stat-orange">
+      <span class="stat-icon">🟡</span>
+      <div>
+        <span class="stat-value">{{ totalActive }}</span>
+        <span class="stat-label">Currently Active</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-panel">
+
+    <!-- Department -->
+    <div class="filter-group">
+      <label>Department</label>
+      <select [(ngModel)]="departmentFilter" (change)="onDepartmentChange()">
+        <option value="">All Departments</option>
+        @for (d of departments(); track d.id) {
+          <option [value]="d.id">{{ d.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Student search -->
+    <div class="filter-group search-group">
+      <label>Student</label>
+      <div class="search-wrapper">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by name or code…"
+          [(ngModel)]="studentSearch"
+          (input)="onStudentSearchInput()"
+          (blur)="showSuggestions = false"
+          (focus)="onStudentSearchInput()"
+          autocomplete="off"
+        />
+        @if (studentSearch) {
+          <button class="search-clear" (mousedown)="$event.preventDefault(); clearStudentSearch()">✕</button>
+        }
+        @if (showSuggestions && studentSuggestions().length > 0) {
+          <ul class="suggestions-list">
+            @for (s of studentSuggestions(); track s.id) {
+              <li (mousedown)="$event.preventDefault(); selectStudent(s)">
+                <span class="sug-name">{{ s.firstName }} {{ s.lastName }}</span>
+                @if (s.studentCode) {
+                  <span class="sug-code">{{ s.studentCode }}</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+        @if (showSuggestions && studentSearch && studentSuggestions().length === 0) {
+          <ul class="suggestions-list">
+            <li class="no-result">No students found</li>
+          </ul>
+        }
+      </div>
+    </div>
+
+    <!-- Day (nhar) -->
+    <div class="filter-group">
+      <label>Day</label>
+      <input type="date" [(ngModel)]="dateFilter" (change)="applyFilters()" />
+    </div>
+
+    <!-- Status -->
+    <div class="filter-group">
+      <label>Status</label>
+      <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="">All Statuses</option>
+        @for (s of STATUS_OPTIONS; track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Active toggle -->
+    <div class="filter-group filter-toggle">
+      <label>
+        <input type="checkbox" [(ngModel)]="activeOnly" (change)="applyFilters()" />
+        Active only
+      </label>
+    </div>
+
+    <button class="btn-reset" (click)="resetFilters()">Reset</button>
+  </div>
+
+  <!-- Success / Error Messages -->
+  @if (deleteSuccess()) {
+    <div class="alert alert-success">{{ deleteSuccess() }}</div>
+  }
+  @if (updateSuccess()) {
+    <div class="alert alert-success">{{ updateSuccess() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error">
+      <span>⚠️ {{ error() }}</span>
+      <button class="btn-secondary" (click)="loadPresences()">Retry</button>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading presence records...</p>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error()) {
+    @if (filteredPresences().length === 0) {
+      <div class="empty-state">
+        <span>📭</span>
+        <p>No presence records found.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="presence-table">
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>Student</th>
+              <th>Status</th>
+              <th>Check-In</th>
+              <th>Check-Out</th>
+              <th>Active</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filteredPresences(); track p.id) {
+              <tr [class.row-active]="isActive(p)">
+                <td class="td-id">{{ p.id }}</td>
+                <td class="td-student">
+                  <span class="student-name">{{ (p.student?.user?.firstName || p.student?.firstName) ? ((p.student?.user?.firstName || p.student?.firstName) + ' ' + (p.student?.user?.lastName || p.student?.lastName)) : 'N/A' }}</span>
+                  @if (p.student?.studentCode) {
+                    <span class="student-code">{{ p.student.studentCode }}</span>
+                  }
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusClass(p.status)">{{ p.status || '—' }}</span>
+                </td>
+                <td class="td-date">{{ p.checkInTime ? (p.checkInTime | date:'medium') : '—' }}</td>
+                <td class="td-date">{{ p.checkOutTime ? (p.checkOutTime | date:'medium') : '—' }}</td>
+                <td>
+                  @if (isActive(p)) {
+                    <span class="active-dot" title="Currently active">🟢 Active</span>
+                  } @else {
+                    <span class="inactive-dot">⚫ Done</span>
+                  }
+                </td>
+                <td class="actions">
+                  <button class="btn-edit" (click)="openEditModal(p)" title="Edit">✏️ Edit</button>
+                  <button class="btn-delete" (click)="deletePresence(p.id)" title="Delete">🗑️ Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  <!-- Edit Modal -->
+  @if (editingPresence()) {
+    <div class="modal-overlay" (click)="closeEditModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Edit Presence #{{ editingPresence().id }}</h2>
+          <button class="modal-close" (click)="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="editForm.status">
+              @for (s of STATUS_OPTIONS; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Check-In Time</label>
+            <input type="datetime-local" [(ngModel)]="editForm.checkInTime" />
+          </div>
+          <div class="form-group">
+            <label>Check-Out Time</label>
+            <input type="datetime-local" [(ngModel)]="editForm.checkOutTime" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+          <button class="btn-save" (click)="saveEdit()" [disabled]="editSaving()">
+            {{ editSaving() ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,1 +1,103 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Admin Dashboard</h1>
+      <p class="dashboard-subtitle">Welcome back! Here's an overview of your platform.</p>
+    </div>
+    <span class="dashboard-date">{{ today | date: 'EEEE, MMMM d, y' }}</span>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card stat-blue">
+      <div class="stat-icon">🎓</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Students</span>
+        <span class="stat-value">{{ totalStudents() }}</span>
+      </div>
+      <a routerLink="/admin/students" class="stat-link">View all →</a>
+    </div>
+
+    <div class="stat-card stat-green">
+      <div class="stat-icon">👨‍🏫</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Staff</span>
+        <span class="stat-value">{{ totalStaff() }}</span>
+      </div>
+      <a routerLink="/admin/staff" class="stat-link">View all →</a>
+    </div>
+
+    <div class="stat-card stat-purple">
+      <div class="stat-icon">🏢</div>
+      <div class="stat-info">
+        <span class="stat-label">Departments</span>
+        <span class="stat-value">{{ totalDepartments() }}</span>
+      </div>
+      <a routerLink="/admin/departments" class="stat-link">View all →</a>
+    </div>
+
+    <div class="stat-card stat-orange">
+      <div class="stat-icon">📋</div>
+      <div class="stat-info">
+        <span class="stat-label">Activities</span>
+        <span class="stat-value">{{ totalActivities() }}</span>
+      </div>
+      <a routerLink="/admin/activities" class="stat-link">View all →</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-grid">
+
+    <!-- Recent Activities -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Recent Activities</h2>
+        <a routerLink="/admin/activities" class="panel-action">See all</a>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading activities...</p>
+        </div>
+      } @else if (recentActivities().length === 0) {
+        <div class="empty-state">
+          <span>📭</span>
+          <p>No activities found.</p>
+        </div>
+      } @else {
+        <ul class="activity-list">
+          @for (activity of recentActivities(); track activity.id) {
+            <li class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-body">
+                <span class="activity-name">{{ activity.title }}</span>
+                <span class="activity-meta">{{ activity.departmentName || 'General' }}</span>
+              </div>
+              <a [routerLink]="['/admin/activities', activity.id]" class="activity-view">→</a>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Quick Navigation</h2>
+      </div>
+      <div class="nav-grid">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" class="nav-card {{ item.color }}">
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>

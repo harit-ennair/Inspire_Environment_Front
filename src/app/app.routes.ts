@@ -23,10 +23,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/dashboard/dashboard').then(m => m.Dashboard)
       },
       {
-        path: 'program',
-        loadComponent: () => import('./features/admin/program/program').then(m => m.Program)
-      },
-      {
         path: 'roles',
         loadComponent: () => import('./features/admin/role/rolesList/roles').then(m => m.RolesList)
       },
@@ -82,6 +78,10 @@ export const routes: Routes = [
         path: 'activities',
         loadChildren: () =>
           import('./features/admin/activities/activities.routes').then(m => m.ACTIVITIES_ROUTES),
+      },
+      {
+        path: 'presence',
+        loadComponent: () => import('./features/admin/presence/presence').then(m => m.Presence)
       },
     ]
   },

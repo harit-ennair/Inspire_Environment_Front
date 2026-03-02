@@ -50,6 +50,10 @@ export class ActivityDetails implements OnInit {
     this.router.navigate(['/admin/activities', this.activityId(), 'assign']);
   }
 
+  goToAttendance(): void {
+    this.router.navigate(['/admin/activities', this.activityId(), 'attendance']);
+  }
+
   goBack(): void {
     this.router.navigate(['/admin/activities']);
   }

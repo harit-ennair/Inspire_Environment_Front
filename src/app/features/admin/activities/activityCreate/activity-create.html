@@ -53,7 +53,8 @@
         <div class="form-group">
           <label for="endTime">End Date &amp; Time <span class="required-star">*</span></label>
           <input id="endTime" formControlName="endTime" type="datetime-local" class="form-control"
-            [class.is-invalid]="isInvalid('endTime')" />
+            [class.is-invalid]="isInvalid('endTime')"
+            [min]="form.get('startTime')?.value" />
           @if (isInvalid('endTime')) {
             <small class="field-error">{{ getError('endTime') }}</small>
           }

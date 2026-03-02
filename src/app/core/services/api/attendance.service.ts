@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class AttendanceService {
 
   private api = 'http://localhost:8080/api';
-  private attendanceApi = `${this.api}/attendance`;
+  private attendanceApi = `${this.api}/attendances`;
 
   constructor(private http: HttpClient) {}
 
@@ -26,5 +26,9 @@ export class AttendanceService {
 
   getAttendancesByStudent(studentId: number): Observable<any> {
     return this.http.get(`${this.attendanceApi}/student/${studentId}`);
+  }
+
+  setCheckInTime(attendanceId: number, checkInTime: string): Observable<any> {
+    return this.http.put(`${this.attendanceApi}/${attendanceId}/check-in-time?checkInTime=${checkInTime}`, {});
   }
 }
