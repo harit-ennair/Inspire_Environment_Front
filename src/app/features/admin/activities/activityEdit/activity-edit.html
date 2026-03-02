@@ -1,0 +1,96 @@
+<div class="page-container">
+  <a class="back-link" [routerLink]="['/admin/activities', activityId()]">← Back to Details</a>
+
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">✏️ Edit Activity</h1>
+      <p class="page-subtitle">Update the activity information below</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading activity...</p></div>
+  }
+
+  @if (success()) {
+    <div class="alert alert-success">✅ Activity updated successfully! Redirecting...</div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-error">⚠️ {{ error() }}</div>
+  }
+
+  @if (!loading()) {
+    <div class="form-card">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <div class="form-group">
+          <label for="title">Title <span class="required-star">*</span></label>
+          <input id="title" formControlName="title" type="text" class="form-control"
+            [class.is-invalid]="isInvalid('title')" placeholder="Activity title" />
+          @if (isInvalid('title')) {
+            <small class="field-error">{{ getError('title') }}</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="type">Activity Type <span class="required-star">*</span></label>
+          <select id="type" formControlName="type" class="form-control"
+            [class.is-invalid]="isInvalid('type')">
+            @for (t of activityTypes; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+          @if (isInvalid('type')) {
+            <small class="field-error">{{ getError('type') }}</small>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startTime">Start Date &amp; Time <span class="required-star">*</span></label>
+            <input id="startTime" formControlName="startTime" type="datetime-local" class="form-control"
+              [class.is-invalid]="isInvalid('startTime')" />
+            @if (isInvalid('startTime')) {
+              <small class="field-error">{{ getError('startTime') }}</small>
+            }
+          </div>
+          <div class="form-group">
+            <label for="endTime">End Date &amp; Time <span class="required-star">*</span></label>
+            <input id="endTime" formControlName="endTime" type="datetime-local" class="form-control"
+              [class.is-invalid]="isInvalid('endTime')" />
+            @if (isInvalid('endTime')) {
+              <small class="field-error">{{ getError('endTime') }}</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="managedBy">Managed By (Staff) <span class="required-star">*</span></label>
+          <select id="managedBy" formControlName="managedBy" class="form-control"
+            [class.is-invalid]="isInvalid('managedBy')">
+            <option [value]="null">— Select a staff member —</option>
+            @for (member of staffList(); track member.id) {
+              <option [value]="member.id">
+                {{ member.firstName || member.user?.firstName }}
+                {{ member.lastName  || member.user?.lastName }}
+                — {{ member.email   || member.user?.email }}
+              </option>
+            }
+          </select>
+          @if (isInvalid('managedBy')) {
+            <small class="field-error">{{ getError('managedBy') }}</small>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            @if (saving()) { ⏳ Saving... } @else { 💾 Save Changes }
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+</div>

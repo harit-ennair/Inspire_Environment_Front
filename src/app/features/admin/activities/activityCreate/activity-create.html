@@ -1,0 +1,90 @@
+<div class="page-container">
+  <a class="back-link" routerLink="/admin/activities">← Back to Activities</a>
+
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">➕ Create New Activity</h1>
+      <p class="page-subtitle">Fill in the details to create a new activity</p>
+    </div>
+  </div>
+
+  @if (success()) {
+    <div class="alert alert-success">✅ Activity created successfully! Redirecting...</div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-error">⚠️ {{ error() }}</div>
+  }
+
+  <div class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="title">Title <span class="required-star">*</span></label>
+        <input id="title" formControlName="title" type="text" class="form-control"
+          [class.is-invalid]="isInvalid('title')" placeholder="Enter activity title" />
+        @if (isInvalid('title')) {
+          <small class="field-error">{{ getError('title') }}</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="type">Activity Type <span class="required-star">*</span></label>
+        <select id="type" formControlName="type" class="form-control"
+          [class.is-invalid]="isInvalid('type')">
+          @for (t of activityTypes; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+        @if (isInvalid('type')) {
+          <small class="field-error">{{ getError('type') }}</small>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startTime">Start Date &amp; Time <span class="required-star">*</span></label>
+          <input id="startTime" formControlName="startTime" type="datetime-local" class="form-control"
+            [class.is-invalid]="isInvalid('startTime')" />
+          @if (isInvalid('startTime')) {
+            <small class="field-error">{{ getError('startTime') }}</small>
+          }
+        </div>
+        <div class="form-group">
+          <label for="endTime">End Date &amp; Time <span class="required-star">*</span></label>
+          <input id="endTime" formControlName="endTime" type="datetime-local" class="form-control"
+            [class.is-invalid]="isInvalid('endTime')" />
+          @if (isInvalid('endTime')) {
+            <small class="field-error">{{ getError('endTime') }}</small>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="managedBy">Managed By (Staff) <span class="required-star">*</span></label>
+        <select id="managedBy" formControlName="managedBy" class="form-control"
+          [class.is-invalid]="isInvalid('managedBy')">
+          <option [value]="null">— Select a staff member —</option>
+          @for (member of staffList(); track member.id) {
+            <option [value]="member.id">
+              {{ member.firstName || member.user?.firstName }}
+              {{ member.lastName  || member.user?.lastName }}
+              — {{ member.email   || member.user?.email }}
+            </option>
+          }
+        </select>
+        @if (isInvalid('managedBy')) {
+          <small class="field-error">{{ getError('managedBy') }}</small>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          @if (loading()) { ⏳ Creating... } @else { ✅ Create Activity }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

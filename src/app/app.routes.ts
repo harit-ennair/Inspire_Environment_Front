@@ -77,7 +77,12 @@ export const routes: Routes = [
       {
         path: 'users',
         loadComponent: () => import('./features/admin/users/users').then(m => m.Users)
-      }
+      },
+      {
+        path: 'activities',
+        loadChildren: () =>
+          import('./features/admin/activities/activities.routes').then(m => m.ACTIVITIES_ROUTES),
+      },
     ]
   },
 

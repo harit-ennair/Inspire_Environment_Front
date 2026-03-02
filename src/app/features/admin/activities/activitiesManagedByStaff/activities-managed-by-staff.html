@@ -1,0 +1,83 @@
+<div class="page-container">
+  <a class="back-link" routerLink="/admin/activities">← Back to Activities</a>
+
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">👨‍🏫 Activities Managed by Staff</h1>
+      <p class="page-subtitle">View all activities a staff member is managing</p>
+    </div>
+  </div>
+
+  <!-- Filter Row -->
+  <div class="filter-row">
+    <div class="filter-group">
+      <label>Select Staff Member</label>
+      <select class="form-control" (change)="onStaffChange($any($event.target).value)">
+        <option value="">— Choose a staff member —</option>
+        @for (member of staffList(); track member.id) {
+          <option [value]="member.email || member.user?.email"
+            [selected]="selectedEmail() === (member.email || member.user?.email)">
+            {{ member.firstName || member.user?.firstName }}
+            {{ member.lastName || member.user?.lastName }}
+            — {{ member.email || member.user?.email }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading activities...</p></div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-error">⚠️ {{ error() }}</div>
+  }
+
+  <!-- Results -->
+  @if (!loading() && selectedEmail()) {
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value">{{ activities().length }}</div>
+        <div class="stat-label">Managed Activities</div>
+      </div>
+    </div>
+
+    @if (activities().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No activities found</h3>
+        <p>This staff member is not managing any activities yet.</p>
+      </div>
+    } @else {
+      <div class="activities-grid">
+        @for (activity of activities(); track activity.id) {
+          <div class="activity-card" (click)="viewActivity(activity.id)">
+            <div class="activity-card-actions">
+              <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
+                {{ activity.status || 'Active' }}
+              </span>
+            </div>
+            <h3 class="activity-card-title">{{ activity.title }}</h3>
+            <p class="activity-card-desc">{{ activity.description | slice:0:80 }}...</p>
+            <div class="activity-card-meta">
+              <span>📅 {{ activity.startDate | date:'mediumDate' }}</span>
+              <span>→ {{ activity.endDate | date:'mediumDate' }}</span>
+              @if (activity.location) { <span>📍 {{ activity.location }}</span> }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  @if (!selectedEmail() && !loading()) {
+    <div class="empty-state">
+      <div class="empty-icon">👨‍🏫</div>
+      <h3>Select a Staff Member</h3>
+      <p>Choose a staff member from the dropdown to see the activities they manage.</p>
+    </div>
+  }
+</div>

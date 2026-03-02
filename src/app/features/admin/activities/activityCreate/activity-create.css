@@ -1,0 +1,12 @@
+@import '../activitiesList/activities-list.css';
+
+.is-invalid {
+  border-color: #fc8181 !important;
+}
+
+.field-error {
+  color: #e53e3e;
+  font-size: 0.78rem;
+  margin-top: 0.25rem;
+  display: block;
+}

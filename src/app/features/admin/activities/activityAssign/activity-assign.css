@@ -1,0 +1,66 @@
+@import '../activitiesList/activities-list.css';
+
+.assign-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.assign-row .form-control {
+  flex: 1;
+}
+
+.picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.people-picker {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.picker-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.picker-item:last-child {
+  border-bottom: none;
+}
+
+.picker-item:hover {
+  background: #f0f4ff;
+}
+
+.picker-item.selected {
+  background: #ebf4ff;
+  border-left: 3px solid #667eea;
+}
+
+.picker-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #2d3748;
+}
+
+.picker-sub {
+  font-size: 0.8rem;
+  color: #a0aec0;
+}
+
+.picker-empty {
+  padding: 0.75rem;
+  color: #a0aec0;
+  font-size: 0.875rem;
+  text-align: center;
+}

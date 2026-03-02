@@ -1,0 +1,110 @@
+<div class="page-container">
+  <a class="back-link" routerLink="/admin/activities">← Back to Activities</a>
+
+  @if (loading()) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading...</p></div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-error">⚠️ {{ error() }} <button class="btn btn-sm" (click)="loadActivity(activityId())">Retry</button></div>
+  }
+
+  @if (!loading() && !error() && activity()) {
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">{{ activity()!.title }}</h1>
+        <span class="status-badge status-active">{{ activity()!.type }}</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="goToAssign()">🔗 Manage Assignments</button>
+        <button class="btn btn-primary" (click)="goToEdit()">✏️ Edit Activity</button>
+      </div>
+    </div>
+
+    <!-- Core Info -->
+    <div class="detail-card">
+      <h2>📋 Activity Information</h2>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Title</label>
+          <p>{{ activity()!.title }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Type</label>
+          <p>{{ activity()!.type || '—' }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Start Date</label>
+          <p>{{ activity()!.startDate | date:'medium' }}</p>
+        </div>
+        <div class="detail-item">
+          <label>End Date</label>
+          <p>{{ activity()!.endDate | date:'medium' }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Managed By</label>
+          <p>{{ activity()!.managedBy || '—' }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Tasks</label>
+          <p>{{ activity()!.tasks?.length || 0 }} task(s)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff -->
+    <div class="detail-card">
+      <h2>👨‍🏫 Assigned Staff</h2>
+      @if (activity()!.staff) {
+        <div class="person-item">
+          <div class="person-info">
+            <span class="person-name">
+              {{ activity()!.staff!.user.firstName }} {{ activity()!.staff!.user.lastName }}
+            </span>
+            <span class="person-email">{{ activity()!.staff!.user.email }}</span>
+            @if (activity()!.staff!.position) {
+              <span class="person-email">Position: {{ activity()!.staff!.position }}</span>
+            }
+          </div>
+          <span class="tag">{{ activity()!.staff!.user.departmentName }}</span>
+        </div>
+      } @else {
+        <p style="color:#a0aec0; font-size:0.875rem;">No staff assigned yet.</p>
+      }
+    </div>
+
+    <!-- Attendances -->
+    <div class="detail-card">
+      <h2>🎓 Attendances ({{ activity()!.attendances?.length || 0 }})</h2>
+      @if (activity()!.attendances && activity()!.attendances!.length > 0) {
+        <div class="people-list">
+          @for (att of activity()!.attendances!; track att.id) {
+            <div class="person-item">
+              <div class="person-info">
+                <span class="person-name">
+                  {{ att.student.user.firstName }} {{ att.student.user.lastName }}
+                </span>
+                <span class="person-email">
+                  {{ att.student.user.email }} • Code: {{ att.student.studentCode }}
+                </span>
+                @if (att.checkInTime) {
+                  <span class="person-email">Check-in: {{ att.checkInTime | date:'medium' }}</span>
+                }
+              </div>
+              <span class="status-badge"
+                [class]="'status-' + att.status.toLowerCase()">
+                {{ att.status }}
+              </span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p style="color:#a0aec0; font-size:0.875rem;">No attendance records yet.</p>
+      }
+    </div>
+
+    <!-- Staff -->
+    <!-- (already rendered above inside Attendances section) -->
+  }
+</div>

@@ -1,0 +1,166 @@
+<div class="page-container">
+  <a class="back-link" [routerLink]="['/admin/activities', activityId()]">← Back to Details</a>
+
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">🔗 Manage Assignments</h1>
+      @if (activity()) {
+        <p class="page-subtitle">{{ activity()!.title }}</p>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading...</p></div>
+  }
+
+  @if (successMsg()) {
+    <div class="alert alert-success">✅ {{ successMsg() }}</div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-error">⚠️ {{ error() }}</div>
+  }
+
+  @if (!loading() && activity()) {
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn" [class.active]="activeTab() === 'student'" (click)="setTab('student')">
+        🎓 Students
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'staff'" (click)="setTab('staff')">
+        👨‍🏫 Staff
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'department'" (click)="setTab('department')">
+        🏢 Department
+      </button>
+    </div>
+
+    <!-- STUDENT TAB -->
+    @if (activeTab() === 'student') {
+      <div class="detail-card">
+        <h2>Assign Student</h2>
+        <div class="picker-wrapper">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by first or last name..."
+            [value]="studentSearch()"
+            (input)="studentSearch.set($any($event.target).value)"
+          />
+          <div class="people-picker">
+            @for (s of filteredStudents(); track s.id) {
+              <div class="picker-item" [class.selected]="selectedStudentId() === s.id"
+                (click)="selectedStudentId.set(s.id)">
+                <span class="picker-name">{{ s.firstName || s.user?.firstName }} {{ s.lastName || s.user?.lastName }}</span>
+                <span class="picker-sub">{{ s.studentCode }}</span>
+              </div>
+            } @empty {
+              <p class="picker-empty">No students found.</p>
+            }
+          </div>
+          <button class="btn btn-primary" style="align-self:flex-start"
+            [disabled]="!selectedStudentId() || assigning()" (click)="assignStudent()">
+            @if (assigning()) { ⏳ } @else { ➕ Assign }
+          </button>
+        </div>
+
+        <h2 style="margin-top:1.5rem;">Enrolled Students via Attendance ({{ activity()!.attendances?.length || 0 }})</h2>
+        @if (activity()!.attendances && activity()!.attendances!.length > 0) {
+          <div class="people-list">
+            @for (att of activity()!.attendances!; track att.id) {
+              <div class="person-item">
+                <div class="person-info">
+                  <span class="person-name">
+                    {{ att.student.user.firstName }} {{ att.student.user.lastName }}
+                  </span>
+                  <span class="person-email">{{ att.student.user.email }}</span>
+                  <span class="person-email">Code: {{ att.student.studentCode }}</span>
+                </div>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                  <span class="status-badge" [class]="'status-' + att.status.toLowerCase()">{{ att.status }}</span>
+                  <button class="btn btn-sm btn-danger"
+                    [disabled]="removing() === att.student.id"
+                    (click)="removeStudent(att.student.id)">
+                    @if (removing() === att.student.id) { ⏳ } @else { 🗑️ Remove }
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p style="color:#a0aec0;font-size:.875rem;">No students assigned yet.</p>
+        }
+      </div>
+    }
+
+    <!-- STAFF TAB -->
+    @if (activeTab() === 'staff') {
+      <div class="detail-card">
+        <h2>Assign Staff Member</h2>
+        <div class="picker-wrapper">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by first or last name..."
+            [value]="staffSearch()"
+            (input)="staffSearch.set($any($event.target).value)"
+          />
+          <div class="people-picker">
+            @for (member of filteredStaff(); track member.id) {
+              <div class="picker-item" [class.selected]="selectedStaffId() === member.id"
+                (click)="selectedStaffId.set(member.id)">
+                <span class="picker-name">{{ member.firstName || member.user?.firstName }} {{ member.lastName || member.user?.lastName }}</span>
+              </div>
+            } @empty {
+              <p class="picker-empty">No staff found.</p>
+            }
+          </div>
+          <button class="btn btn-primary" style="align-self:flex-start"
+            [disabled]="!selectedStaffId() || assigning()" (click)="assignStaff()">
+            @if (assigning()) { ⏳ } @else { ➕ Assign }
+          </button>
+        </div>
+
+        <h2 style="margin-top:1.5rem;">Current Staff</h2>
+        @if (activity()!.staff) {
+          <div class="people-list">
+            <div class="person-item">
+              <div class="person-info">
+                <span class="person-name">
+                  {{ activity()!.staff!.user.firstName }} {{ activity()!.staff!.user.lastName }}
+                </span>
+                <span class="person-email">{{ activity()!.staff!.user.email }}</span>
+                @if (activity()!.staff!.position) {
+                  <span class="person-email">Position: {{ activity()!.staff!.position }}</span>
+                }
+              </div>
+              <span class="tag">{{ activity()!.staff!.user.departmentName }}</span>
+            </div>
+          </div>
+        } @else {
+          <p style="color:#a0aec0;font-size:.875rem;">No staff assigned yet.</p>
+        }
+      </div>
+    }
+
+    <!-- DEPARTMENT TAB -->
+    @if (activeTab() === 'department') {
+      <div class="detail-card">
+        <h2>Assign Department</h2>
+        <div class="assign-row">
+          <select class="form-control" [value]="selectedDepartmentId()"
+            (change)="selectedDepartmentId.set(+$any($event.target).value)">
+            <option value="">— Select a department —</option>
+            @for (dept of departments(); track dept.id) {
+              <option [value]="dept.id">{{ dept.name }}</option>
+            }
+          </select>
+          <button class="btn btn-primary" [disabled]="!selectedDepartmentId() || assigning()" (click)="assignDepartment()">
+            @if (assigning()) { ⏳ } @else { ➕ Assign }
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
