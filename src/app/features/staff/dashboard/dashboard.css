@@ -24,13 +24,10 @@
   width: 100%;
   height: 80%;
   z-index: 1;
-}
-
-.hero-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  background-image: url('/images/dashbord.JPG');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .hero-overlay {

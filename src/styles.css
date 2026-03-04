@@ -1,5 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
 /* ===== Global: Back to Dashboard button ===== */
 .back-btn {
   display: inline-flex;

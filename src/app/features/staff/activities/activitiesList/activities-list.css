@@ -11,7 +11,7 @@
 /* Hero Section */
 .hero-section {
   background:  linear-gradient(135deg, rgba(49, 49, 49, 0.201) 0%, rgba(23, 23, 23, 0.59) 100%),
-              url('https://myapi.um6p.ma/sites/default/files/2025-11/DSC08828_11zon.jpg');
+              url('/images/banner.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
