@@ -20,7 +20,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/admin/dashboard/dashboard').then(m => m.Dashboard)
+        loadComponent: () => import('./features/staff/dashboard/dashboard').then(m => m.Dashboard)
       },
       {
         path: 'roles',
@@ -48,15 +48,15 @@ export const routes: Routes = [
       },
       {
         path: 'students',
-        loadComponent: () => import('./features/admin/students/studentsList/students').then(m => m.StudentsList)
+        loadComponent: () => import('./features/staff/students/studentsList/students').then(m => m.StudentsList)
       },
       {
         path: 'students/create',
-        loadComponent: () => import('./features/admin/students/studentsForm/students').then(m => m.StudentsForm)
+        loadComponent: () => import('./features/staff/students/studentsForm/students').then(m => m.StudentsForm)
       },
       {
         path: 'students/edit/:id',
-        loadComponent: () => import('./features/admin/students/studentsForm/students').then(m => m.StudentsForm)
+        loadComponent: () => import('./features/staff/students/studentsForm/students').then(m => m.StudentsForm)
       },
       {
         path: 'staff',
@@ -77,11 +77,11 @@ export const routes: Routes = [
       {
         path: 'activities',
         loadChildren: () =>
-          import('./features/admin/activities/activities.routes').then(m => m.ACTIVITIES_ROUTES),
+          import('./features/staff/activities/activities.routes').then(m => m.ACTIVITIES_ROUTES),
       },
       {
         path: 'presence',
-        loadComponent: () => import('./features/admin/presence/presence').then(m => m.Presence)
+        loadComponent: () => import('./features/staff/presence/presence').then(m => m.Presence)
       },
     ]
   },
@@ -96,15 +96,15 @@ export const routes: Routes = [
       },
       {
         path: 'attendance',
-        loadComponent: () => import('./features/staff/attendance/attendance').then(m => m.Attendance)
+        loadComponent: () => import('./features/staff/activities/activities-attendance/activities-attendance').then(m => m.ActivitiesAttendance)
       },
       {
         path: 'manage-activities',
-        loadComponent: () => import('./features/staff/manage-activities/manage-activities').then(m => m.ManageActivities)
+        loadComponent: () => import('./features/staff/activities/activitiesManagedByStaff/activities-managed-by-staff').then(m => m.ActivitiesManagedByStaff)
       },
       {
         path: 'manage-tasks',
-        loadComponent: () => import('./features/staff/manage-tasks/manage-tasks').then(m => m.ManageTasks)
+        loadComponent: () => import('./features/staff/activities/activitiesList/activities-list').then(m => m.ActivitiesList)
       }
     ]
   },
