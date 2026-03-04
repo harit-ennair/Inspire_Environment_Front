@@ -1,32 +1,36 @@
 <div class="page-container">
-  <a routerLink="/admin/dashboard" class="back-btn">← Back to Dashboard</a>
-  <!-- Header -->
-  <div class="page-header">
-    <div class="header-left">
-      <h1 class="page-title">🗂️ Activities Management</h1>
-      <p class="page-subtitle">Manage all activities, assignments and schedules</p>
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <p class="hero-subtitle">INSPIRE ENVIRONMENT</p>
+      <h1 class="hero-title">Activities</h1>
+      <p class="hero-description">Inspiring tomorrow's cultural actors through transformative experiences</p>
     </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="page-nav">
+    <a routerLink="/admin/dashboard" class="nav-link">← Dashboard</a>
     <div class="header-actions">
       <a routerLink="/admin/activities/new" class="btn btn-primary">
-        ➕ New Activity
+        New Activity
       </a>
     </div>
   </div>
 
-  <!-- Search Bar -->
-  <div class="search-bar">
-    <div class="search-input-wrapper">
-      <span class="search-icon">🔍</span>
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-wrapper">
       <input
         type="text"
         class="search-input"
-        placeholder="Search by title..."
+        placeholder="Search activities..."
         [value]="searchTerm()"
         (input)="searchTerm.set($any($event.target).value); onSearch()"
       />
     </div>
 
-    <select class="form-select" (change)="onDepartmentFilter($event)">
+    <select class="filter-select" (change)="onDepartmentFilter($event)">
       <option value="">All Departments</option>
       @for (dept of departments(); track dept.id) {
         <option [value]="dept.id" [selected]="selectedDepartmentId() === dept.id">
@@ -56,53 +60,64 @@
   @if (!loading() && !error()) {
     @if (activities().length === 0) {
       <div class="empty-state">
-        <div class="empty-icon">📋</div>
-        <h3>No activities found</h3>
-        <p>Create your first activity to get started.</p>
-        <a routerLink="/admin/activities/new" class="btn btn-primary">Create Activity</a>
+        <div class="empty-content">
+          <h3>No activities found</h3>
+          <p>Create your first activity to inspire and engage participants.</p>
+          <a routerLink="/admin/activities/new" class="btn btn-primary">Create Activity</a>
+        </div>
       </div>
     } @else {
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (activity of activities(); track activity.id) {
-              <tr>
-                <td class="id-cell">{{ activity.id }}</td>
-                <td class="title-cell">
-                  <span class="activity-title">{{ activity.title }}</span>
-                </td>
-                <td>
-                  <span class="status-badge status-active">{{ activity.type || '—' }}</span>
-                </td>
-                <td>{{ activity.startDate | date:'dd MMM yyyy | HH:mm' }}</td>
-                <td>{{ activity.endDate | date:'dd MMM yyyy | HH:mm' }}</td>
-
-                <td>
-                  <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
-                    {{ activity.status || 'Active' }}
-                  </span>
-                </td>
-                <td class="actions-cell">
-                  <button class="btn btn-icon btn-view" (click)="viewDetails(activity.id)" title="View Details">👁️</button>
-                  <button class="btn btn-icon btn-edit" (click)="editActivity(activity.id)" title="Edit">✏️</button>
-                  <a class="btn btn-icon btn-assign" [routerLink]="['/admin/activities', activity.id, 'assign']" title="Assign">🔗</a>
-                  <button class="btn btn-icon btn-delete" (click)="confirmDelete(activity.id)" title="Delete">🗑️</button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+      <!-- Activities Grid -->
+      <div class="activities-grid">
+        @for (activity of activities(); track activity.id) {
+          <div class="activity-card">
+            <div class="card-header">
+              <span class="activity-type">{{ activity.type || 'Activity' }}</span>
+              <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
+                {{ activity.status || 'Active' }}
+              </span>
+            </div>
+            
+            <div class="card-content">
+              <h3 class="activity-title">{{ activity.title }}</h3>
+              
+              <div class="activity-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Start</span>
+                  <span class="meta-value">{{ activity.startDate | date:'MMM dd, yyyy' }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">End</span>
+                  <span class="meta-value">{{ activity.endDate | date:'MMM dd, yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-actions">
+              <button class="action-btn btn-view" (click)="viewDetails(activity.id)" title="View Details">
+                View Details
+              </button>
+              <div class="action-icons">
+                <button class="icon-btn" (click)="editActivity(activity.id)" title="Edit">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                  </svg>
+                </button>
+                <a class="icon-btn" [routerLink]="['/admin/activities', activity.id, 'assign']" title="Assign">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                  </svg>
+                </a>
+                <button class="icon-btn btn-delete" (click)="confirmDelete(activity.id)" title="Delete">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     }
   }
