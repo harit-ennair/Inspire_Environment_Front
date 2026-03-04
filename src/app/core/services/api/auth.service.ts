@@ -16,6 +16,7 @@ export class AuthService {
     return this.http.post(`${this.authApi}/login`, data);
   }
 
+  //********************
   logout(token: string): Observable<any> {
     return this.http.post(`${this.authApi}/logout`, {}, {
       headers: { Authorization: `Bearer ${token}` }

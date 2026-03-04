@@ -12,6 +12,7 @@ export class AttendanceService {
 
   constructor(private http: HttpClient) {}
 
+//********************
   checkInAttendance(activityId: number, studentId: number): Observable<any> {
     return this.http.post(`${this.attendanceApi}/check-in?activityId=${activityId}&studentId=${studentId}`, {});
   }
@@ -24,6 +25,7 @@ export class AttendanceService {
     return this.http.get(`${this.attendanceApi}/activity/${activityId}`);
   }
 
+  //********************
   getAttendancesByStudent(studentId: number): Observable<any> {
     return this.http.get(`${this.attendanceApi}/student/${studentId}`);
   }

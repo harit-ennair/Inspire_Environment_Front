@@ -41,31 +41,8 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'student',
-    children: [
-      // Dashboard
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./features/student/dashboard/dashboard').then(m => m.Dashboard)
-      },
-
-      // Activities
-      {
-        path: 'activities',
-        loadComponent: () => import('./features/student/activities/activities').then(m => m.Activities)
-      },
-
-      // Tasks
-      {
-        path: 'tasks',
-        loadComponent: () => import('./features/student/tasks/tasks').then(m => m.Tasks)
-      },
-
-      // Submissions
-      {
-        path: 'submissions',
-        loadComponent: () => import('./features/student/submissions/submissions').then(m => m.Submissions)
-      }
-    ]
+    loadChildren: () =>
+      import('./features/student/student.routes').then(m => m.STUDENT_ROUTES)
   },
 
   // ==========================================

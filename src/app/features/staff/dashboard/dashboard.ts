@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { StudentsService } from '../../../core/services/api/students.service';
 import { StaffService } from '../../../core/services/api/staff.service';
 import { ActivitiesService } from '../../../core/services/api/activities.service';
@@ -20,6 +20,8 @@ export class Dashboard implements OnInit {
   private activitiesService = inject(ActivitiesService);
   private departmentsService = inject(DepartmentsService);
 
+  private router = inject(Router);
+
   totalStudents = signal<number>(0);
   totalStaff = signal<number>(0);
   totalActivities = signal<number>(0);
@@ -30,17 +32,20 @@ export class Dashboard implements OnInit {
   today = new Date();
 
   navItems = [
-    { label: 'Students',    icon: '🎓', route: '/admin/students',    color: 'card-blue' },
+    { label: 'Students',    icon: '🎓', route: '/staff/students',    color: 'card-blue' },
     { label: 'Staff',       icon: '👨‍🏫', route: '/admin/staff',       color: 'card-green' },
     { label: 'Departments', icon: '🏢', route: '/admin/departments',  color: 'card-purple' },
-    { label: 'Activities',  icon: '📋', route: '/admin/activities',   color: 'card-orange' },
+    { label: 'Activities',  icon: '📋', route: '/staff/activities',   color: 'card-orange' },
     { label: 'Roles',       icon: '🔑', route: '/admin/roles',        color: 'card-red' },
-    { label: 'Users',       icon: '👤', route: '/admin/users',        color: 'card-teal' },
-    { label: 'Presence',    icon: '📍', route: '/admin/presence',     color: 'card-indigo' },
+    { label: 'Presence',    icon: '📍', route: '/staff/presence',     color: 'card-indigo' },
   ];
 
   ngOnInit(): void {
     this.loadStats();
+  }
+
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
   }
 
   loadStats(): void {
