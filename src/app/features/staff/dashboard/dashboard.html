@@ -1,17 +1,26 @@
 <div class="dashboard">
 
-  <!-- Header -->
-  <div class="dashboard-header">
-    <div class="header-content">
-      <h1 class="dashboard-title">Staff Dashboard</h1>
-      <div class="title-divider"></div>
-      <p class="dashboard-subtitle">Welcome back! Here's an overview of your platform.</p>
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-image">
+      <img src="https://myapi.um6p.ma/sites/default/files/2025-11/banner-DSC09259_11zon.jpg" alt="Dashboard Banner" />
+      <div class="hero-overlay"></div>
     </div>
-    <span class="dashboard-date">{{ today | date: 'EEEE, MMMM d, y' }}</span>
+    <div class="hero-content">
+      <div class="hero-badge">{{ today | date: 'EEEE, MMMM d, y' }}</div>
+      <h1 class="hero-title">Staff Dashboard</h1>
+      <p class="hero-subtitle">Empowering education through collaboration, innovation, and excellence</p>
+      <div class="hero-divider"></div>
+    </div>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="section-header">
+      <h2 class="section-title">Platform Overview</h2>
+      <p class="section-description">Real-time statistics and metrics</p>
+    </div>
+    <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-header">
         <span class="stat-icon">🎓</span>
@@ -66,6 +75,7 @@
           <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
+    </div>
     </div>
   </div>
 
