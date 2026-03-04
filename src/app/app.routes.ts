@@ -50,6 +50,6 @@ export const routes: Routes = [
   // ==========================================
   {
     path: '**',
-    redirectTo: '/login'
+    loadComponent: () => import('./features/page-error404/page-error404').then(m => m.PageError404)
   }
 ];
