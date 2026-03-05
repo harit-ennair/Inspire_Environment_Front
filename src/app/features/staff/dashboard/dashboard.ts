@@ -5,6 +5,7 @@ import { StudentsService } from '../../../core/services/api/students.service';
 import { StaffService } from '../../../core/services/api/staff.service';
 import { ActivitiesService } from '../../../core/services/api/activities.service';
 import { DepartmentsService } from '../../../core/services/api/departments.service';
+import { AuthService } from '../../../core/services/api/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +20,7 @@ export class Dashboard implements OnInit {
   private staffService = inject(StaffService);
   private activitiesService = inject(ActivitiesService);
   private departmentsService = inject(DepartmentsService);
+  private authService = inject(AuthService);
 
   private router = inject(Router);
 
@@ -26,6 +28,9 @@ export class Dashboard implements OnInit {
   totalStaff = signal<number>(0);
   totalActivities = signal<number>(0);
   totalDepartments = signal<number>(0);
+
+  userName = this.authService.getUserName() || 'Staff Member';
+  
 
   recentActivities = signal<any[]>([]);
   loading = signal<boolean>(true);

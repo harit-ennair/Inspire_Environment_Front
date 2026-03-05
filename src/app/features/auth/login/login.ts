@@ -21,7 +21,13 @@ export class Login {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) { }
+  ) {
+    // Check if sessionStorage is available
+    if (!this.authService.isStorageAvailable()) {
+      console.error('SessionStorage is not available! Session data cannot be stored.');
+      this.errorMessage = 'Browser storage is not available. Please enable cookies and try again.';
+    }
+  }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -68,6 +74,26 @@ export class Login {
         if (response.firstName && response.lastName) {
           sessionStorage.setItem('firstName', response.firstName);
           sessionStorage.setItem('lastName', response.lastName);
+          sessionStorage.setItem('userName', `${response.firstName} ${response.lastName}`);
+          console.log('User name stored:', `${response.firstName} ${response.lastName}`);
+        }
+        
+        // Debug: Log all stored session data
+        console.log('Session storage contents:', {
+          token: sessionStorage.getItem('token') ? 'present' : 'missing',
+          refreshToken: sessionStorage.getItem('refreshToken') ? 'present' : 'missing',
+          userId: sessionStorage.getItem('userId'),
+          email: sessionStorage.getItem('email'),
+          userName: sessionStorage.getItem('userName'),
+          role: sessionStorage.getItem('role')
+        });
+        
+        // Verify data was actually stored
+        const storedToken = sessionStorage.getItem('token');
+        if (!storedToken) {
+          console.error('CRITICAL: Token was not stored in sessionStorage!');
+          this.errorMessage = 'Failed to save authentication data. Please try again.';
+          return;
         }
         
         // Store role and navigate
