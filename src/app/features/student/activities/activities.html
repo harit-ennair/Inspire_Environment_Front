@@ -1,1 +1,103 @@
-<p>activities works!</p>
+<div class="activities-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="heading-style">
+            <h4 class="heading-label">Weekly Overview</h4>
+            <h2 class="heading-title">My Activities</h2>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your activities...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="error-state">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error() }}</p>
+        <button class="retry-btn" (click)="loadActivities()">Retry</button>
+    </div>
+    }
+
+    <!-- Calendar Grid -->
+    @if (!loading() && !error()) {
+    <div class="calendar-grid">
+        @for (day of weekDays(); track day.dayNumber) {
+        <div class="day-column" [class.is-today]="day.isToday">
+
+            <!-- Day Header -->
+            <div class="day-header">
+                <span class="day-name">{{ day.dayName }}</span>
+                <span class="day-number" [class.today-number]="day.isToday">{{ day.dayNumber }}</span>
+                <span class="day-month">{{ day.monthShort }}</span>
+            </div>
+
+            <!-- Day Content -->
+            <div class="day-content">
+                @for (activity of getActivitiesForDay(day); track activity.id) {
+                <div class="activity-card" [ngClass]="getTypeBadgeClass(activity.type)">
+
+                    <!-- Presence Status Badge -->
+                    <div class="presence-indicator" [ngClass]="getPresenceClass(activity.presenceStatus)">
+                        <span class="presence-icon">{{ getPresenceIcon(activity.presenceStatus) }}</span>
+                        <span class="presence-label">{{ activity.presenceStatus || 'No record' }}</span>
+                    </div>
+
+                    <div class="activity-time">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span>{{ formatTime(activity.startDate) }} – {{ formatTime(activity.endDate) }}</span>
+                    </div>
+                    <h4 class="activity-title">{{ activity.title }}</h4>
+                    @if (activity.type) {
+                    <span class="type-badge">{{ activity.type }}</span>
+                    }
+                    @if (activity.location) {
+                    <div class="activity-location">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <span>{{ activity.location }}</span>
+                    </div>
+                    }
+
+                    <!-- Check-in/out times -->
+                    @if (activity.checkInTime) {
+                    <div class="checkin-info">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        <span>In: {{ formatTime(activity.checkInTime) }}</span>
+                        @if (activity.checkOutTime) {
+                        <span> · Out: {{ formatTime(activity.checkOutTime) }}</span>
+                        }
+                    </div>
+                    }
+                </div>
+                } @empty {
+                <div class="no-activities">
+                    <span class="empty-dot"></span>
+                    <span>No activities</span>
+                </div>
+                }
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+</div>

@@ -1,1 +1,214 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-image">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">{{ today | date: 'EEEE, MMMM d, y' }}</div>
+            <h2 class="hero-welcome">Welcome back,</h2>
+            <h1 class="hero-title">{{ userName }}</h1>
+        </div>
+    </div>
+
+    <!-- Check-in / Check-out Section -->
+    <div class="checkin-section">
+        <div class="heading-style">
+            <h4 class="heading-label">Daily Attendance</h4>
+            <h2 class="heading-title">Check-in / Check-out</h2>
+        </div>
+
+        <div class="checkin-card">
+            <div class="checkin-status-row">
+                <!-- Check-in side -->
+                <div class="checkin-block">
+                    <div class="checkin-icon-circle" [class.done]="checkedIn()">
+                        @if (checkedIn()) {
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        } @else {
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        }
+                    </div>
+                    <div class="checkin-info">
+                        <span class="checkin-label">Check-in</span>
+                        @if (checkedIn()) {
+                        <span class="checkin-time">{{ formatTime(checkInTime()) }}</span>
+                        } @else {
+                        <span class="checkin-pending">Not yet</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Progress line -->
+                <div class="checkin-progress">
+                    <div class="progress-line">
+                        <div class="progress-fill" [class.half]="checkedIn() && !checkedOut()"
+                            [class.full]="checkedOut()"></div>
+                    </div>
+                </div>
+
+                <!-- Check-out side -->
+                <div class="checkin-block">
+                    <div class="checkin-icon-circle checkout-icon" [class.done]="checkedOut()">
+                        @if (checkedOut()) {
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        } @else {
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        }
+                    </div>
+                    <div class="checkin-info">
+                        <span class="checkin-label">Check-out</span>
+                        @if (checkedOut()) {
+                        <span class="checkin-time">{{ formatTime(checkOutTime()) }}</span>
+                        } @else {
+                        <span class="checkin-pending">Not yet</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="checkin-actions">
+                @if (checkSuccess()) {
+                <div class="check-alert check-success">✓ {{ checkSuccess() }}</div>
+                }
+                @if (checkError()) {
+                <div class="check-alert check-error">{{ checkError() }}</div>
+                }
+
+                @if (canCheckIn()) {
+                <button class="pill-button pill-primary" (click)="doCheckIn()" [disabled]="checkLoading()">
+                    <span>Check In</span>
+                    <span class="pill-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </button>
+                } @else if (canCheckOut()) {
+                <button class="pill-button pill-outline" (click)="doCheckOut()" [disabled]="checkLoading()">
+                    <span>Check Out</span>
+                    <span class="pill-icon-dark">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </button>
+                } @else {
+                <div class="check-complete">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M22 4L12 14.01l-3-3" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>Attendance complete for today</span>
+                </div>
+                }
+
+                @if (checkLoading()) {
+                <div class="check-loading">
+                    <div class="spinner-sm"></div>
+                    <span>Processing...</span>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="section-separator">
+        <hr>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+
+        <!-- This Week's Activities -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="heading-style">
+                    <h4 class="heading-label">This Week</h4>
+                    <h2 class="heading-title-sm">Upcoming Activities</h2>
+                </div>
+                <a routerLink="/student/activities" class="pill-button-outline">
+                    <span>See all</span>
+                    <span class="pill-icon-dark">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M7 17L17 7M17 7H7M17 7v10" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </a>
+            </div>
+
+            @if (activitiesLoading()) {
+            <div class="loading-state-sm">
+                <div class="spinner-sm"></div>
+                <p>Loading...</p>
+            </div>
+            } @else if (weekActivities().length === 0) {
+            <div class="empty-state-sm">
+                <span>📭</span>
+                <p>No activities this week.</p>
+            </div>
+            } @else {
+            <ul class="activity-list">
+                @for (act of weekActivities(); track act.id) {
+                <li class="activity-item">
+                    <div class="activity-content">
+                        <span class="activity-name">{{ act.title }}</span>
+                        <span class="activity-meta">{{ formatActivityTime(act.startDate) }}</span>
+                    </div>
+                    <a [routerLink]="['/student/activities']" class="activity-view">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                </li>
+                }
+            </ul>
+            }
+        </div>
+
+        <!-- Quick Navigation -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="heading-style">
+                    <h4 class="heading-label">Quick Access</h4>
+                    <h2 class="heading-title-sm">Navigation</h2>
+                </div>
+            </div>
+            <div class="nav-grid">
+                @for (item of navItems; track item.route) {
+                <a [routerLink]="item.route" class="nav-card">
+                    <span class="nav-icon">{{ item.icon }}</span>
+                    <span class="nav-label">{{ item.label }}</span>
+                    <span class="nav-arrow">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M7 17L17 7M17 7H7M17 7v10" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </a>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

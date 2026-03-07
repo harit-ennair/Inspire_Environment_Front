@@ -1,0 +1,591 @@
+/* ===== Design Tokens ===== */
+:host {
+    --primary: #d4451e;
+    --primary-light: #ec6235;
+    --primary-subtle: rgba(212, 69, 30, 0.08);
+    --text-dark: #222429;
+    --text-gray: #8f8f8f;
+    --gray-light: #e6e6e6;
+    --gray-bg: #f0f1f6;
+    --white: #ffffff;
+    --black: #222429;
+    --green: #16a34a;
+    --green-bg: rgba(22, 163, 74, 0.1);
+    --red: #dc2626;
+    --red-bg: rgba(220, 38, 38, 0.1);
+    --amber: #b45309;
+    --amber-bg: rgba(234, 179, 8, 0.12);
+    --blue: #2563eb;
+    --blue-bg: rgba(37, 99, 235, 0.1);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ===== Page Layout ===== */
+.presence-page {
+    background: var(--white);
+    min-height: 100vh;
+    font-family: var(--font);
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2.5rem 80px 4rem;
+}
+
+/* ===== Page Header ===== */
+.page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.heading-style {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.heading-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-gray);
+    font-weight: 500;
+    margin: 0;
+}
+
+.heading-title {
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.heading-title-sm {
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* ===== Stats Grid ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 2rem 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+    border: 1px solid var(--gray-light);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.stat-card:hover::before {
+    transform: scaleX(1);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.stat-present::before {
+    background: var(--green);
+}
+
+.stat-absent::before {
+    background: var(--red);
+}
+
+.stat-late::before {
+    background: var(--amber);
+}
+
+.stat-inner {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 1rem;
+    letter-spacing: -2px;
+}
+
+.stat-percent {
+    font-size: 1.75rem;
+    letter-spacing: 0;
+    color: var(--primary);
+}
+
+.stat-present .stat-number {
+    color: var(--green);
+}
+
+.stat-absent .stat-number {
+    color: var(--red);
+}
+
+.stat-late .stat-number {
+    color: var(--amber);
+}
+
+.stat-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 0.25rem 0;
+}
+
+.stat-desc {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    margin: 0;
+}
+
+/* Progress Bar */
+.stat-bar {
+    height: 4px;
+    background: var(--gray-light);
+    border-radius: 4px;
+    margin-top: 1.25rem;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Section Separator ===== */
+.section-separator {
+    margin: 0;
+}
+
+.section-separator hr {
+    border: none;
+    height: 1px;
+    background: var(--gray-light);
+    margin: 3rem 0;
+}
+
+/* ===== History Section ===== */
+.history-section {}
+
+.section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== Filter Tabs ===== */
+.filter-area {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gray-bg);
+    border-radius: 54px;
+    padding: 0.4rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--font);
+    text-transform: capitalize;
+}
+
+.filter-tab:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.filter-tab.active {
+    background: var(--white);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 0.4rem;
+    border-radius: 50px;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+/* ===== Records List ===== */
+.records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.record-card {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--gray-light);
+    border-bottom: none;
+    background: var(--white);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.record-card:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.record-card:last-child {
+    border-bottom: 1px solid var(--gray-light);
+    border-radius: 0 0 12px 12px;
+}
+
+.record-card:only-child {
+    border-radius: 12px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.record-card:hover {
+    background: rgba(0, 0, 0, 0.01);
+    transform: translateX(2px);
+}
+
+/* Status Stripe */
+.record-status-stripe {
+    width: 4px;
+    flex-shrink: 0;
+}
+
+.record-status-stripe.status-present {
+    background: var(--green);
+}
+
+.record-status-stripe.status-absent {
+    background: var(--red);
+}
+
+.record-status-stripe.status-late {
+    background: var(--amber);
+}
+
+.record-status-stripe.status-excused {
+    background: var(--blue);
+}
+
+.record-status-stripe.status-pending {
+    background: var(--text-gray);
+}
+
+.record-status-stripe.status-default {
+    background: var(--gray-light);
+}
+
+/* Record Body */
+.record-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    gap: 1.5rem;
+}
+
+.record-main {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.record-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    min-width: 160px;
+}
+
+.record-date svg {
+    color: var(--text-gray);
+    flex-shrink: 0;
+}
+
+/* Time blocks */
+.record-times {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.time-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.time-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.time-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    font-variant-numeric: tabular-nums;
+}
+
+.time-separator {
+    color: var(--gray-light);
+    display: flex;
+    align-items: center;
+    padding-top: 0.75rem;
+}
+
+/* Status Badge */
+.record-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 58px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.badge-icon {
+    font-size: 0.8rem;
+}
+
+.record-badge.status-present {
+    background: var(--green-bg);
+    color: var(--green);
+}
+
+.record-badge.status-absent {
+    background: var(--red-bg);
+    color: var(--red);
+}
+
+.record-badge.status-late {
+    background: var(--amber-bg);
+    color: var(--amber);
+}
+
+.record-badge.status-excused {
+    background: var(--blue-bg);
+    color: var(--blue);
+}
+
+.record-badge.status-pending {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+}
+
+.record-badge.status-default {
+    background: var(--gray-bg);
+    color: var(--text-gray);
+}
+
+/* ===== Loading & Empty States ===== */
+.loading-state,
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    color: var(--text-gray);
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gray-light);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-icon,
+.empty-icon {
+    font-size: 2.5rem;
+}
+
+.retry-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1.5rem;
+    border-radius: 58px;
+    border: 1px solid var(--text-dark);
+    background: var(--white);
+    color: var(--text-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--font);
+}
+
+.retry-btn:hover {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1400px) {
+    .presence-page {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .heading-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .presence-page {
+        padding: 2rem 20px;
+    }
+
+    .heading-title {
+        font-size: 1.75rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+    }
+
+    .stat-card {
+        min-height: auto;
+        padding: 1.5rem;
+    }
+
+    .record-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .record-body {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .filter-area {
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .heading-title {
+        font-size: 1.5rem;
+    }
+
+    .heading-title-sm {
+        font-size: 1.25rem;
+    }
+
+    .record-date {
+        min-width: auto;
+    }
+
+    .filter-tab {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .presence-page {
+        padding: 1.5rem 15px;
+    }
+
+    .record-times {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .time-separator {
+        display: none;
+    }
+}

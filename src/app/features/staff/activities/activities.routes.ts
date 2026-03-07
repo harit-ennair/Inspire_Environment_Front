@@ -12,17 +12,17 @@ export const ACTIVITIES_ROUTES: Routes = [
       import('./activityCreate/activity-create').then(m => m.ActivityCreate),
   },
   {
-    path: 'student/:id',
+    path: 'student',
     loadComponent: () =>
       import('./activitiesByStudent/activities-by-student').then(m => m.ActivitiesByStudent),
   },
   {
-    path: 'department/:id',
+    path: 'department',
     loadComponent: () =>
       import('./activitiesByDepartment/activities-by-department').then(m => m.ActivitiesByDepartment),
   },
   {
-    path: 'staff/:email',
+    path: 'staff',
     loadComponent: () =>
       import('./activitiesManagedByStaff/activities-managed-by-staff').then(m => m.ActivitiesManagedByStaff),
   },

@@ -1,1 +1,146 @@
-<p>presence works!</p>
+<div class="presence-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="heading-style">
+            <h4 class="heading-label">Attendance Tracking</h4>
+            <h2 class="heading-title">My Presence</h2>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your presence records...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="error-state">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error() }}</p>
+        <button class="retry-btn" (click)="loadPresences()">Retry</button>
+    </div>
+    }
+
+    @if (!loading() && !error()) {
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-inner">
+                <span class="stat-number">{{ attendanceRate() }}<span class="stat-percent">%</span></span>
+                <h4 class="stat-label">Attendance Rate</h4>
+                <p class="stat-desc">Overall attendance performance</p>
+            </div>
+            <div class="stat-bar">
+                <div class="stat-bar-fill" [style.width.%]="attendanceRate()"></div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-present">
+            <div class="stat-inner">
+                <span class="stat-number">{{ totalPresent() }}</span>
+                <h4 class="stat-label">Present</h4>
+                <p class="stat-desc">Sessions attended on time</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-absent">
+            <div class="stat-inner">
+                <span class="stat-number">{{ totalAbsent() }}</span>
+                <h4 class="stat-label">Absent</h4>
+                <p class="stat-desc">Sessions missed</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-late">
+            <div class="stat-inner">
+                <span class="stat-number">{{ totalLate() }}</span>
+                <h4 class="stat-label">Late</h4>
+                <p class="stat-desc">Arrived after start time</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Separator -->
+    <div class="section-separator">
+        <hr>
+    </div>
+
+    <!-- Filter & History -->
+    <div class="history-section">
+        <div class="section-header">
+            <div class="heading-style">
+                <h4 class="heading-label">Records</h4>
+                <h2 class="heading-title-sm">Presence History</h2>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-area">
+            @for (status of STATUS_FILTERS; track status) {
+            <button class="filter-tab" [class.active]="filterStatus() === status" (click)="setFilter(status)">
+                {{ status === 'ALL' ? 'All' : status }}
+                @if (status === 'ALL') {
+                <span class="filter-count">{{ totalRecords() }}</span>
+                }
+            </button>
+            }
+        </div>
+
+        <!-- Records List -->
+        @if (filteredPresences().length === 0) {
+        <div class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>No presence records found.</p>
+        </div>
+        } @else {
+        <div class="records-list">
+            @for (p of filteredPresences(); track p.id) {
+            <div class="record-card">
+                <div class="record-status-stripe" [ngClass]="getStatusClass(p.status)"></div>
+                <div class="record-body">
+                    <div class="record-main">
+                        <div class="record-date">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            <span>{{ formatDate(p.checkInTime) }}</span>
+                        </div>
+                        <div class="record-times">
+                            <div class="time-block">
+                                <span class="time-label">Check-in</span>
+                                <span class="time-value">{{ formatTime(p.checkInTime) }}</span>
+                            </div>
+                            <div class="time-separator">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="time-block">
+                                <span class="time-label">Check-out</span>
+                                <span class="time-value">{{ formatTime(p.checkOutTime) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record-badge" [ngClass]="getStatusClass(p.status)">
+                        <span class="badge-icon">{{ getStatusIcon(p.status) }}</span>
+                        <span>{{ p.status }}</span>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+
+    }
+</div>
