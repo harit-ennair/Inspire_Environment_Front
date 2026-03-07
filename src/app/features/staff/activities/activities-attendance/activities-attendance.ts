@@ -38,7 +38,7 @@ export class ActivitiesAttendance implements OnInit {
     this.loadAttendances(id);
     this.activitiesService.getActivityById(id).subscribe({
       next: (data: Activity) => this.activity.set(data),
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -119,11 +119,11 @@ export class ActivitiesAttendance implements OnInit {
 
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      PRESENT: 'badge-success',
-      ABSENT: 'badge-danger',
-      LATE: 'badge-warning',
-      PENDING: 'badge-pending',
+      PRESENT: 'status-present',
+      ABSENT: 'status-absent',
+      LATE: 'status-late',
+      PENDING: 'status-pending',
     };
-    return map[status] ?? 'badge-default';
+    return map[status] ?? 'status-default';
   }
 }

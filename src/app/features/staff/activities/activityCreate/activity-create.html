@@ -1,19 +1,31 @@
 <div class="page-container">
-  <a class="back-link" routerLink="/admin/activities">← Back to Activities</a>
 
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <nav class="breadcrumb-nav">
+      <a routerLink="/admin/activities" class="breadcrumb-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Back to Activities
+      </a>
+    </nav>
+  </div>
+
+  <!-- Header -->
   <div class="page-header">
-    <div class="header-left">
-      <h1 class="page-title">➕ Create New Activity</h1>
-      <p class="page-subtitle">Fill in the details to create a new activity</p>
+    <div class="heading-style">
+      <h4 class="heading-label">New Activity</h4>
+      <h2 class="heading-title">Create Activity</h2>
     </div>
   </div>
 
   @if (success()) {
-    <div class="alert alert-success">✅ Activity created successfully! Redirecting...</div>
+  <div class="alert alert-success">✅ Activity created successfully! Redirecting...</div>
   }
 
   @if (error()) {
-    <div class="alert alert-error">⚠️ {{ error() }}</div>
+  <div class="alert alert-error">⚠️ {{ error() }}</div>
   }
 
   <div class="form-card">
@@ -24,20 +36,19 @@
         <input id="title" formControlName="title" type="text" class="form-control"
           [class.is-invalid]="isInvalid('title')" placeholder="Enter activity title" />
         @if (isInvalid('title')) {
-          <small class="field-error">{{ getError('title') }}</small>
+        <small class="field-error">{{ getError('title') }}</small>
         }
       </div>
 
       <div class="form-group">
         <label for="type">Activity Type <span class="required-star">*</span></label>
-        <select id="type" formControlName="type" class="form-control"
-          [class.is-invalid]="isInvalid('type')">
+        <select id="type" formControlName="type" class="form-control" [class.is-invalid]="isInvalid('type')">
           @for (t of activityTypes; track t) {
-            <option [value]="t">{{ t }}</option>
+          <option [value]="t">{{ t }}</option>
           }
         </select>
         @if (isInvalid('type')) {
-          <small class="field-error">{{ getError('type') }}</small>
+        <small class="field-error">{{ getError('type') }}</small>
         }
       </div>
 
@@ -47,16 +58,15 @@
           <input id="startTime" formControlName="startTime" type="datetime-local" class="form-control"
             [class.is-invalid]="isInvalid('startTime')" />
           @if (isInvalid('startTime')) {
-            <small class="field-error">{{ getError('startTime') }}</small>
+          <small class="field-error">{{ getError('startTime') }}</small>
           }
         </div>
         <div class="form-group">
           <label for="endTime">End Date &amp; Time <span class="required-star">*</span></label>
           <input id="endTime" formControlName="endTime" type="datetime-local" class="form-control"
-            [class.is-invalid]="isInvalid('endTime')"
-            [min]="form.get('startTime')?.value" />
+            [class.is-invalid]="isInvalid('endTime')" [min]="form.get('startTime')?.value" />
           @if (isInvalid('endTime')) {
-            <small class="field-error">{{ getError('endTime') }}</small>
+          <small class="field-error">{{ getError('endTime') }}</small>
           }
         </div>
       </div>
@@ -67,22 +77,22 @@
           [class.is-invalid]="isInvalid('managedBy')">
           <option [value]="null">— Select a staff member —</option>
           @for (member of staffList(); track member.id) {
-            <option [value]="member.id">
-              {{ member.firstName || member.user?.firstName }}
-              {{ member.lastName  || member.user?.lastName }}
-              — {{ member.email   || member.user?.email }}
-            </option>
+          <option [value]="member.id">
+            {{ member.firstName || member.user?.firstName }}
+            {{ member.lastName || member.user?.lastName }}
+            — {{ member.email || member.user?.email }}
+          </option>
           }
         </select>
         @if (isInvalid('managedBy')) {
-          <small class="field-error">{{ getError('managedBy') }}</small>
+        <small class="field-error">{{ getError('managedBy') }}</small>
         }
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" [disabled]="loading()">
-          @if (loading()) { ⏳ Creating... } @else { ✅ Create Activity }
+        <button type="button" class="pill-button-sm pill-outline-sm" (click)="cancel()">Cancel</button>
+        <button type="submit" class="pill-button-sm pill-primary-sm" [disabled]="loading()">
+          @if (loading()) { ⏳ Creating... } @else { Create Activity }
         </button>
       </div>
 

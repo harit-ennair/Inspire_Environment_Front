@@ -1,93 +1,113 @@
 <div class="page-container">
-  <a class="back-link" routerLink="/admin/activities">← Back to Activities</a>
 
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <nav class="breadcrumb-nav">
+      <a routerLink="/admin/activities" class="breadcrumb-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Back to Activities
+      </a>
+    </nav>
+  </div>
+
+  <!-- Header -->
   <div class="page-header">
-    <div class="header-left">
-      <h1 class="page-title">🏢 Activities by Department</h1>
-      <p class="page-subtitle">Browse all activities assigned to a specific department</p>
+    <div class="heading-style">
+      <h4 class="heading-label">Browse by Department</h4>
+      <h2 class="heading-title">Activities by Department</h2>
     </div>
   </div>
 
   <!-- Filter Row -->
-  <div class="filter-row">
+  <div class="filters-section">
     <div class="filter-group">
-      <label>Select Department</label>
+      <label class="filter-label">Select Department</label>
       <select class="form-control" (change)="onDepartmentChange(+$any($event.target).value)">
         <option value="">— Choose a department —</option>
         @for (dept of departments(); track dept.id) {
-          <option [value]="dept.id">{{ dept.name }}</option>
+        <option [value]="dept.id">{{ dept.name }}</option>
         }
       </select>
     </div>
 
     @if (selectedDeptId()) {
-      <div class="filter-group" style="justify-content:flex-end;flex-direction:row;align-items:center;gap:0.5rem;">
-        <label style="margin:0;white-space:nowrap;">This week only</label>
+    <div class="filter-group filter-toggle">
+      <label class="filter-label">This week only</label>
+      <label class="toggle">
         <input type="checkbox" [checked]="showWeekOnly()" (change)="showWeekOnly.set($any($event.target).checked)" />
-        @if (showWeekOnly()) {
-          <span class="week-badge">📅 This Week</span>
-        }
-      </div>
+        <span class="toggle-slider"></span>
+      </label>
+      @if (showWeekOnly()) {
+      <span class="week-badge">📅 This Week</span>
+      }
+    </div>
     }
   </div>
 
   <!-- Loading -->
   @if (loading()) {
-    <div class="loading-state"><div class="spinner"></div><p>Loading activities...</p></div>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading activities...</p>
+  </div>
   }
 
   @if (error()) {
-    <div class="alert alert-error">⚠️ {{ error() }}</div>
+  <div class="alert alert-error">⚠️ {{ error() }}</div>
   }
 
   <!-- Results -->
   @if (!loading() && selectedDeptId()) {
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon">📋</div>
-        <div class="stat-value">{{ activities().length }}</div>
-        <div class="stat-label">Total Activities</div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-number">{{ activities().length }}</span>
+      <span class="stat-label">Total Activities</span>
+    </div>
+    <div class="stat-card stat-card-accent">
+      <span class="stat-number">{{ weekActivities().length }}</span>
+      <span class="stat-label">This Week</span>
+    </div>
+  </div>
+
+  @if (displayedActivities().length === 0) {
+  <div class="empty-state">
+    <span class="empty-icon">📋</span>
+    <h3>No activities found</h3>
+    <p>{{ showWeekOnly() ? 'No activities this week for this department.' : 'This department has no activities yet.' }}
+    </p>
+  </div>
+  } @else {
+  <div class="activities-grid">
+    @for (activity of displayedActivities(); track activity.id) {
+    <div class="activity-card" (click)="viewActivity(activity.id)">
+      <div class="card-top">
+        <span class="activity-type">Activity</span>
+        <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
+          {{ activity.status || 'Active' }}
+        </span>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-value">{{ weekActivities().length }}</div>
-        <div class="stat-label">This Week</div>
+      <div class="card-body">
+        <h3 class="activity-title">{{ activity.title }}</h3>
+        <p class="activity-desc">{{ activity.description | slice:0:80 }}...</p>
+        <div class="activity-meta">
+          <span>📅 {{ activity.startDate | date:'mediumDate' }}</span>
+          <span>→ {{ activity.endDate | date:'mediumDate' }}</span>
+          @if (activity.location) { <span>📍 {{ activity.location }}</span> }
+        </div>
       </div>
     </div>
-
-    @if (displayedActivities().length === 0) {
-      <div class="empty-state">
-        <div class="empty-icon">📋</div>
-        <h3>No activities found</h3>
-        <p>{{ showWeekOnly() ? 'No activities this week for this department.' : 'This department has no activities yet.' }}</p>
-      </div>
-    } @else {
-      <div class="activities-grid">
-        @for (activity of displayedActivities(); track activity.id) {
-          <div class="activity-card" (click)="viewActivity(activity.id)">
-            <div class="activity-card-actions">
-              <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
-                {{ activity.status || 'Active' }}
-              </span>
-            </div>
-            <h3 class="activity-card-title">{{ activity.title }}</h3>
-            <p class="activity-card-desc">{{ activity.description | slice:0:80 }}...</p>
-            <div class="activity-card-meta">
-              <span>📅 {{ activity.startDate | date:'mediumDate' }}</span>
-              <span>→ {{ activity.endDate | date:'mediumDate' }}</span>
-              @if (activity.location) { <span>📍 {{ activity.location }}</span> }
-            </div>
-          </div>
-        }
-      </div>
     }
+  </div>
+  }
   }
 
   @if (!selectedDeptId() && !loading()) {
-    <div class="empty-state">
-      <div class="empty-icon">🏢</div>
-      <h3>Select a department</h3>
-      <p>Choose a department from the dropdown above to view its activities.</p>
-    </div>
+  <div class="empty-state">
+    <span class="empty-icon">🏢</span>
+    <h3>Select a department</h3>
+    <p>Choose a department from the dropdown above to view its activities.</p>
+  </div>
   }
 </div>
