@@ -1,236 +1,268 @@
-<div class="presence-container">
+<div class="page-container">
 
-  <a routerLink="/admin/dashboard" class="back-btn">← Back to Dashboard</a>
-
-  <div class="header">
-    <div>
-      <h1>Presence Management</h1>
-      <p class="subtitle">Monitor and manage student attendance records.</p>
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-image">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <span class="hero-badge">INSPIRE ENVIRONMENT</span>
+      <h1 class="hero-title">Presence Management</h1>
+      <p class="hero-description">Monitor and manage student attendance records across all departments</p>
     </div>
   </div>
 
-  <!-- Stats Row -->
-  <div class="stats-row">
-    <div class="stat-card stat-blue">
-      <span class="stat-icon">📋</span>
-      <div>
-        <span class="stat-value">{{ presences().length }}</span>
-        <span class="stat-label">Total Records</span>
+  <!-- Breadcrumb & Actions -->
+  <div class="page-toolbar">
+    <nav class="breadcrumb-nav">
+      <a routerLink="/staff/dashboard" class="breadcrumb-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M9 22V12h6v10" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Dashboard
+      </a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Presence</span>
+    </nav>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon">📋</span>
+        <div class="stat-info">
+          <span class="stat-label">Total Records</span>
+          <span class="stat-value">{{ presences().length }}</span>
+        </div>
       </div>
-    </div>
-    <div class="stat-card stat-green">
-      <span class="stat-icon">✅</span>
-      <div>
-        <span class="stat-value">{{ totalPresent }}</span>
-        <span class="stat-label">Present</span>
+      <div class="stat-card">
+        <span class="stat-icon text-success">✅</span>
+        <div class="stat-info">
+          <span class="stat-label">Present</span>
+          <span class="stat-value">{{ totalPresent }}</span>
+        </div>
       </div>
-    </div>
-    <div class="stat-card stat-red">
-      <span class="stat-icon">❌</span>
-      <div>
-        <span class="stat-value">{{ totalAbsent }}</span>
-        <span class="stat-label">Absent</span>
+      <div class="stat-card">
+        <span class="stat-icon text-danger">❌</span>
+        <div class="stat-info">
+          <span class="stat-label">Absent</span>
+          <span class="stat-value">{{ totalAbsent }}</span>
+        </div>
       </div>
-    </div>
-    <div class="stat-card stat-orange">
-      <span class="stat-icon">🟡</span>
-      <div>
-        <span class="stat-value">{{ totalActive }}</span>
-        <span class="stat-label">Currently Active</span>
+      <div class="stat-card card-highlight">
+        <span class="stat-icon text-warning">🟡</span>
+        <div class="stat-info">
+          <span class="stat-label">Currently Active</span>
+          <span class="stat-value">{{ totalActive }}</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="filters-panel">
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" stroke-linecap="round" />
+      </svg>
+      <input type="text" class="search-input" placeholder="Search student by name or code..."
+        [(ngModel)]="studentSearch" (input)="onStudentSearchInput()" (blur)="showSuggestions = false"
+        (focus)="onStudentSearchInput()" autocomplete="off" />
+      @if (studentSearch) {
+      <button class="search-clear" (mousedown)="$event.preventDefault(); clearStudentSearch()">✕</button>
+      }
+      @if (showSuggestions && studentSuggestions().length > 0) {
+      <ul class="suggestions-list">
+        @for (s of studentSuggestions(); track s.id) {
+        <li (mousedown)="$event.preventDefault(); selectStudent(s)">
+          <span class="sug-name">{{ s.firstName }} {{ s.lastName }}</span>
+          @if (s.studentCode) {
+          <span class="sug-code">{{ s.studentCode }}</span>
+          }
+        </li>
+        }
+      </ul>
+      }
+    </div>
 
-    <!-- Department -->
-    <div class="filter-group">
-      <label>Department</label>
-      <select [(ngModel)]="departmentFilter" (change)="onDepartmentChange()">
+    <div class="filter-actions">
+      <select class="filter-select" [(ngModel)]="departmentFilter" (change)="onDepartmentChange()">
         <option value="">All Departments</option>
         @for (d of departments(); track d.id) {
-          <option [value]="d.id">{{ d.name }}</option>
+        <option [value]="d.id">{{ d.name }}</option>
         }
       </select>
-    </div>
 
-    <!-- Student search -->
-    <div class="filter-group search-group">
-      <label>Student</label>
-      <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Search by name or code…"
-          [(ngModel)]="studentSearch"
-          (input)="onStudentSearchInput()"
-          (blur)="showSuggestions = false"
-          (focus)="onStudentSearchInput()"
-          autocomplete="off"
-        />
-        @if (studentSearch) {
-          <button class="search-clear" (mousedown)="$event.preventDefault(); clearStudentSearch()">✕</button>
-        }
-        @if (showSuggestions && studentSuggestions().length > 0) {
-          <ul class="suggestions-list">
-            @for (s of studentSuggestions(); track s.id) {
-              <li (mousedown)="$event.preventDefault(); selectStudent(s)">
-                <span class="sug-name">{{ s.firstName }} {{ s.lastName }}</span>
-                @if (s.studentCode) {
-                  <span class="sug-code">{{ s.studentCode }}</span>
-                }
-              </li>
-            }
-          </ul>
-        }
-        @if (showSuggestions && studentSearch && studentSuggestions().length === 0) {
-          <ul class="suggestions-list">
-            <li class="no-result">No students found</li>
-          </ul>
-        }
-      </div>
-    </div>
-
-    <!-- Day (nhar) -->
-    <div class="filter-group">
-      <label>Day</label>
-      <input type="date" [(ngModel)]="dateFilter" (change)="applyFilters()" />
-    </div>
-
-    <!-- Status -->
-    <div class="filter-group">
-      <label>Status</label>
-      <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <select class="filter-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
         <option value="">All Statuses</option>
         @for (s of STATUS_OPTIONS; track s) {
-          <option [value]="s">{{ s }}</option>
+        <option [value]="s">{{ s }}</option>
         }
       </select>
-    </div>
 
-    <!-- Active toggle -->
-    <div class="filter-group filter-toggle">
-      <label>
+      <div class="date-input-wrapper">
+        <input type="date" class="filter-date" [(ngModel)]="dateFilter" (change)="applyFilters()" />
+      </div>
+
+      <label class="toggle-control">
         <input type="checkbox" [(ngModel)]="activeOnly" (change)="applyFilters()" />
-        Active only
+        <span class="toggle-label">Active only</span>
       </label>
-    </div>
 
-    <button class="btn-reset" (click)="resetFilters()">Reset</button>
+      <button class="btn-reset-pill" (click)="resetFilters()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+        </svg>
+        Reset
+      </button>
+    </div>
   </div>
 
-  <!-- Success / Error Messages -->
-  @if (deleteSuccess()) {
+  <!-- Messages -->
+  <div class="alerts-container">
+    @if (deleteSuccess()) {
     <div class="alert alert-success">{{ deleteSuccess() }}</div>
-  }
-  @if (updateSuccess()) {
+    }
+    @if (updateSuccess()) {
     <div class="alert alert-success">{{ updateSuccess() }}</div>
-  }
-  @if (error()) {
+    }
+    @if (error()) {
     <div class="alert alert-error">
       <span>⚠️ {{ error() }}</span>
-      <button class="btn-secondary" (click)="loadPresences()">Retry</button>
+      <button class="pill-button-sm pill-outline-sm" (click)="loadPresences()">Retry</button>
     </div>
-  }
-
-  <!-- Loading -->
-  @if (loading()) {
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Loading presence records...</p>
-    </div>
-  }
-
-  <!-- Table -->
-  @if (!loading() && !error()) {
-    @if (filteredPresences().length === 0) {
-      <div class="empty-state">
-        <span>📭</span>
-        <p>No presence records found.</p>
-      </div>
-    } @else {
-      <div class="table-wrapper">
-        <table class="presence-table">
-          <thead>
-            <tr>
-              <th>#ID</th>
-              <th>Student</th>
-              <th>Status</th>
-              <th>Check-In</th>
-              <th>Check-Out</th>
-              <th>Active</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (p of filteredPresences(); track p.id) {
-              <tr [class.row-active]="isActive(p)">
-                <td class="td-id">{{ p.id }}</td>
-                <td class="td-student">
-                  <span class="student-name">{{ (p.student?.user?.firstName || p.student?.firstName) ? ((p.student?.user?.firstName || p.student?.firstName) + ' ' + (p.student?.user?.lastName || p.student?.lastName)) : 'N/A' }}</span>
-                  @if (p.student?.studentCode) {
-                    <span class="student-code">{{ p.student.studentCode }}</span>
-                  }
-                </td>
-                <td>
-                  <span class="badge" [ngClass]="getStatusClass(p.status)">{{ p.status || '—' }}</span>
-                </td>
-                <td class="td-date">{{ p.checkInTime ? (p.checkInTime | date:'medium') : '—' }}</td>
-                <td class="td-date">{{ p.checkOutTime ? (p.checkOutTime | date:'medium') : '—' }}</td>
-                <td>
-                  @if (isActive(p)) {
-                    <span class="active-dot" title="Currently active">🟢 Active</span>
-                  } @else {
-                    <span class="inactive-dot">⚫ Done</span>
-                  }
-                </td>
-                <td class="actions">
-                  <button class="btn-edit" (click)="openEditModal(p)" title="Edit">✏️ Edit</button>
-                  <button class="btn-delete" (click)="deletePresence(p.id)" title="Delete">🗑️ Delete</button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
     }
+  </div>
+
+  <!-- Content -->
+  @if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading presence records...</p>
+  </div>
+  } @else if (!error()) {
+  @if (filteredPresences().length === 0) {
+  <div class="empty-state">
+    <div class="empty-content">
+      <span class="empty-icon">📭</span>
+      <h3>No records found</h3>
+      <p>Adjust your filters or try a different search term.</p>
+    </div>
+  </div>
+  } @else {
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="heading-style">
+      <h4 class="heading-label">Registrations</h4>
+      <h2 class="heading-title">Attendance Records</h2>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Student Details</th>
+          <th>Status</th>
+          <th>Check-In</th>
+          <th>Check-Out</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of filteredPresences(); track p.id) {
+        <tr [class.row-active]="isActive(p)">
+          <td class="col-id">#{{ p.id }}</td>
+          <td class="col-student">
+            <div class="student-info">
+              <span class="student-name">{{ (p.student?.user?.firstName || p.student?.firstName) ?
+                ((p.student?.user?.firstName || p.student?.firstName) + ' ' + (p.student?.user?.lastName ||
+                p.student?.lastName)) : 'N/A' }}</span>
+              @if (p.student?.studentCode) {
+              <span class="student-code">{{ p.student.studentCode }}</span>
+              }
+            </div>
+          </td>
+          <td>
+            <span class="status-pill" [ngClass]="getStatusClass(p.status)">{{ p.status || '—' }}</span>
+          </td>
+          <td class="col-date">{{ p.checkInTime ? (p.checkInTime | date:'medium') : '—' }}</td>
+          <td class="col-date">{{ p.checkOutTime ? (p.checkOutTime | date:'medium') : '—' }}</td>
+          <td>
+            @if (isActive(p)) {
+            <span class="indicator-active">● Active</span>
+            } @else {
+            <span class="indicator-done">● Completed</span>
+            }
+          </td>
+          <td class="col-actions">
+            <div class="action-group">
+              <button class="action-btn edit" (click)="openEditModal(p)" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path
+                    d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+                </svg>
+              </button>
+              <button class="action-btn delete" (click)="deletePresence(p.id)" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path
+                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                  <path fill-rule="evenodd"
+                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
   }
 
   <!-- Edit Modal -->
   @if (editingPresence()) {
-    <div class="modal-overlay" (click)="closeEditModal()">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2>Edit Presence #{{ editingPresence().id }}</h2>
-          <button class="modal-close" (click)="closeEditModal()">✕</button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Edit Presence Record</h2>
+        <button class="modal-close" (click)="closeEditModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full-width">
             <label>Status</label>
-            <select [(ngModel)]="editForm.status">
+            <select class="form-select" [(ngModel)]="editForm.status">
               @for (s of STATUS_OPTIONS; track s) {
-                <option [value]="s">{{ s }}</option>
+              <option [value]="s">{{ s }}</option>
               }
             </select>
           </div>
           <div class="form-group">
             <label>Check-In Time</label>
-            <input type="datetime-local" [(ngModel)]="editForm.checkInTime" />
+            <input type="datetime-local" class="form-input" [(ngModel)]="editForm.checkInTime" />
           </div>
           <div class="form-group">
             <label>Check-Out Time</label>
-            <input type="datetime-local" [(ngModel)]="editForm.checkOutTime" />
+            <input type="datetime-local" class="form-input" [(ngModel)]="editForm.checkOutTime" />
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn-secondary" (click)="closeEditModal()">Cancel</button>
-          <button class="btn-save" (click)="saveEdit()" [disabled]="editSaving()">
-            {{ editSaving() ? 'Saving…' : 'Save Changes' }}
-          </button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="pill-button-sm pill-outline-sm" (click)="closeEditModal()">Cancel</button>
+        <button class="pill-button-sm pill-primary-sm" (click)="saveEdit()" [disabled]="editSaving()">
+          {{ editSaving() ? 'Saving…' : 'Save Changes' }}
+        </button>
       </div>
     </div>
+  </div>
   }
 
 </div>
