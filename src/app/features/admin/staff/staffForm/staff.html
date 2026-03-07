@@ -1,186 +1,129 @@
-<div class="form-container">
-  <div class="form-header">
-    <button class="btn-back" (click)="router.navigate(['/admin/staff'])" title="Back to staff">
-      ← Back
-    </button>
-    <h1>{{ isEdit() ? 'Edit Staff' : 'Create New Staff' }}</h1>
+<div class="page-container">
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <nav class="breadcrumb-nav">
+      <a (click)="router.navigate(['/admin/staff'])" class="breadcrumb-link" style="cursor: pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Back to Staff
+      </a>
+    </nav>
+  </div>
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="heading-style">
+      <h4 class="heading-label">Administration</h4>
+      <h2 class="heading-title">{{ isEdit() ? 'Edit Staff Member' : 'Create New Staff' }}</h2>
+    </div>
   </div>
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Loading staff data...</p>
-    </div>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading staff data...</p>
+  </div>
   }
 
   <!-- Form -->
   @if (!loading()) {
-    <div class="form-card">
-      <form (ngSubmit)="save()" #staffForm="ngForm">
-        
-        <!-- Position -->
-        <div class="form-group">
-          <label for="position" class="form-label">
-            Position <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="position"
-            name="position"
-            class="form-input"
-            [(ngModel)]="staff().position"
-            required
-            placeholder="Enter position (e.g., Professor, Coordinator)"
-            #position="ngModel"
-          />
-          @if (position.invalid && (position.dirty || position.touched)) {
-            <div class="error-text">
-              Position is required
-            </div>
-          }
-        </div>
+  <div class="form-card">
+    <form (ngSubmit)="save()" #staffForm="ngForm">
 
+      <!-- Position -->
+      <div class="form-group">
+        <label for="position">Position <span class="required-star">*</span></label>
+        <input type="text" id="position" name="position" class="form-control" [(ngModel)]="staff().position" required
+          placeholder="e.g., Professor, Coordinator" #position="ngModel"
+          [class.is-invalid]="position.invalid && (position.dirty || position.touched)" />
+        @if (position.invalid && (position.dirty || position.touched)) {
+        <small class="field-error">Position is required</small>
+        }
+      </div>
+
+      <div class="form-row">
         <!-- First Name -->
         <div class="form-group">
-          <label for="firstName" class="form-label">
-            First Name <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            class="form-input"
-            [(ngModel)]="staff().user.firstName"
-            required
-            placeholder="Enter first name"
-            #firstName="ngModel"
-          />
+          <label for="firstName">First Name <span class="required-star">*</span></label>
+          <input type="text" id="firstName" name="firstName" class="form-control" [(ngModel)]="staff().user.firstName"
+            required placeholder="First name" #firstName="ngModel"
+            [class.is-invalid]="firstName.invalid && (firstName.dirty || firstName.touched)" />
           @if (firstName.invalid && (firstName.dirty || firstName.touched)) {
-            <div class="error-text">
-              First name is required
-            </div>
+          <small class="field-error">First name is required</small>
           }
         </div>
 
         <!-- Last Name -->
         <div class="form-group">
-          <label for="lastName" class="form-label">
-            Last Name <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            class="form-input"
-            [(ngModel)]="staff().user.lastName"
-            required
-            placeholder="Enter last name"
-            #lastName="ngModel"
-          />
+          <label for="lastName">Last Name <span class="required-star">*</span></label>
+          <input type="text" id="lastName" name="lastName" class="form-control" [(ngModel)]="staff().user.lastName"
+            required placeholder="Last name" #lastName="ngModel"
+            [class.is-invalid]="lastName.invalid && (lastName.dirty || lastName.touched)" />
           @if (lastName.invalid && (lastName.dirty || lastName.touched)) {
-            <div class="error-text">
-              Last name is required
-            </div>
+          <small class="field-error">Last name is required</small>
           }
         </div>
+      </div>
 
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email" class="form-label">
-            Email <span class="required">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            class="form-input"
-            [(ngModel)]="staff().user.email"
-            required
-            email
-            placeholder="Enter email address"
-            #email="ngModel"
-          />
-          @if (email.invalid && (email.dirty || email.touched)) {
-            <div class="error-text">
-              @if (email.errors?.['required']) {
-                Email is required
-              }
-              @if (email.errors?.['email']) {
-                Please enter a valid email
-              }
-            </div>
-          }
-        </div>
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address <span class="required-star">*</span></label>
+        <input type="email" id="email" name="email" class="form-control" [(ngModel)]="staff().user.email" required email
+          placeholder="email@example.com" #email="ngModel"
+          [class.is-invalid]="email.invalid && (email.dirty || email.touched)" />
+        @if (email.invalid && (email.dirty || email.touched)) {
+        <small class="field-error">
+          @if (email.errors?.['required']) { Email is required }
+          @if (email.errors?.['email']) { Please enter a valid email }
+        </small>
+        }
+      </div>
 
+      <div class="form-row">
         <!-- Role -->
         <div class="form-group">
-          <label for="roleId" class="form-label">
-            Role <span class="required">*</span>
-          </label>
-          <select
-            id="roleId"
-            name="roleId"
-            class="form-select"
-            [(ngModel)]="staff().user.roleId"
-            required
-            #roleId="ngModel"
-          >
-            <option [ngValue]="null">Select a role</option>
+          <label for="roleId">Role <span class="required-star">*</span></label>
+          <select id="roleId" name="roleId" class="form-control" [(ngModel)]="staff().user.roleId" required
+            #roleId="ngModel" [class.is-invalid]="roleId.invalid && (roleId.dirty || roleId.touched)">
+            <option [ngValue]="null">— Select a role —</option>
             @for (role of roles(); track role.id) {
-              <option [ngValue]="role.id">{{ role.name }}</option>
+            <option [ngValue]="role.id">{{ role.name }}</option>
             }
           </select>
           @if (roleId.invalid && (roleId.dirty || roleId.touched)) {
-            <div class="error-text">
-              Role is required
-            </div>
+          <small class="field-error">Role is required</small>
           }
         </div>
 
         <!-- Department -->
         <div class="form-group">
-          <label for="departmentId" class="form-label">
-            Department <span class="required">*</span>
-          </label>
-          <select
-            id="departmentId"
-            name="departmentId"
-            class="form-select"
-            [(ngModel)]="staff().user.departmentId"
-            required
-            #departmentId="ngModel"
-          >
-            <option [ngValue]="null">Select a department</option>
+          <label for="departmentId">Department <span class="required-star">*</span></label>
+          <select id="departmentId" name="departmentId" class="form-control" [(ngModel)]="staff().user.departmentId"
+            required #departmentId="ngModel"
+            [class.is-invalid]="departmentId.invalid && (departmentId.dirty || departmentId.touched)">
+            <option [ngValue]="null">— Select a department —</option>
             @for (dept of departments(); track dept.id) {
-              <option [ngValue]="dept.id">{{ dept.name }}</option>
+            <option [ngValue]="dept.id">{{ dept.name }}</option>
             }
           </select>
           @if (departmentId.invalid && (departmentId.dirty || departmentId.touched)) {
-            <div class="error-text">
-              Department is required
-            </div>
+          <small class="field-error">Department is required</small>
           }
         </div>
+      </div>
 
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button
-            type="button"
-            class="btn-cancel"
-            (click)="router.navigate(['/admin/staff'])"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            class="btn-submit"
-            [disabled]="staffForm.invalid"
-          >
-            {{ isEdit() ? 'Update Staff' : 'Create Staff' }}
-          </button>
-        </div>
-      </form>
-    </div>
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="pill-button-sm pill-outline-sm" (click)="router.navigate(['/admin/staff'])">
+          Cancel
+        </button>
+        <button type="submit" class="pill-button-sm pill-primary-sm" [disabled]="staffForm.invalid">
+          {{ isEdit() ? 'Update Staff Member' : 'Create Staff' }}
+        </button>
+      </div>
+    </form>
+  </div>
   }
 </div>
