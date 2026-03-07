@@ -1,0 +1,135 @@
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    padding: 40px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 700px;
+    width: 100%;
+}
+
+.error-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: 300;
+    margin: 0;
+    line-height: 1;
+    color: #1a1a1a;
+    letter-spacing: -2px;
+}
+
+.divider {
+    width: 2px;
+    height: 80px;
+    background-color: #f05c2b;
+}
+
+.error-message {
+    font-size: 32px;
+    margin: 0 0 24px;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+}
+
+.error-description {
+    font-size: 16px;
+    margin: 0 0 48px;
+    line-height: 1.8;
+    color: #666666;
+    font-weight: 300;
+}
+
+.btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    color: #f05c2b;
+    border: 2px solid #f05c2b;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-home:hover {
+    background-color: #f05c2b;
+    color: #ffffff;
+    transform: translateX(4px);
+}
+
+.btn-home:active {
+    transform: translateX(2px);
+}
+
+.btn-home svg {
+    transition: transform 0.3s ease;
+}
+
+.btn-home:hover svg {
+    transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 80px;
+    }
+
+    .divider {
+        height: 60px;
+    }
+
+    .error-header {
+        gap: 20px;
+    }
+
+    .error-message {
+        font-size: 24px;
+    }
+
+    .error-description {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .btn-home {
+        padding: 12px 28px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-code {
+        font-size: 60px;
+    }
+
+    .divider {
+        height: 45px;
+    }
+
+    .error-header {
+        gap: 15px;
+    }
+
+    .error-message {
+        font-size: 20px;
+    }
+}

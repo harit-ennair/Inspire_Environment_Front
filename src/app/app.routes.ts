@@ -49,6 +49,10 @@ export const routes: Routes = [
   // FALLBACK ROUTE
   // ==========================================
   {
+    path: '403',
+    loadComponent: () => import('./features/page-error403/page-error403').then(m => m.PageError403)
+  },
+  {
     path: '**',
     loadComponent: () => import('./features/page-error404/page-error404').then(m => m.PageError404)
   }
