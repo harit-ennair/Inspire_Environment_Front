@@ -86,6 +86,16 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('../staff/presence/presence').then(m => m.Presence),
       },
+      {
+        path: 'submissions',
+        loadComponent: () =>
+          import('../staff/submissions/submissions').then(m => m.StaffSubmissions),
+      },
+      {
+        path: 'tasks',
+        loadComponent: () =>
+          import('../staff/tasks/tasks').then(m => m.StaffTasks),
+      },
     ]
   },
 ];

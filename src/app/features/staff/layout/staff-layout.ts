@@ -21,6 +21,8 @@ export class StaffLayout {
         { label: 'Students', path: '/staff/students' },
         { label: 'Activities', path: '/staff/activities' },
         { label: 'Presence', path: '/staff/presence' },
+        { label: 'Submissions', path: '/staff/submissions' },
+        { label: 'Tasks', path: '/staff/tasks' },
     ];
 
     mobileMenuOpen = false;

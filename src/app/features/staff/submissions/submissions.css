@@ -1,7 +1,6 @@
 :host {
     --primary: #d4451e;
     --primary-light: #ec6235;
-    --primary-subtle: rgba(212, 69, 30, 0.08);
     --text-dark: #222429;
     --text-gray: #8f8f8f;
     --gray-light: #e6e6e6;
@@ -61,76 +60,148 @@
     line-height: 1.2;
 }
 
-/* Stats Row */
-.stats-row {
-    display: flex;
-    gap: 1rem;
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
 }
 
-.stat-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: var(--gray-bg);
-    border-radius: 58px;
+.stat-card {
+    border: 1px solid var(--gray-light);
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.stat-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
 }
 
-.dot-pending {
-    background: var(--text-gray);
+.stat-card:hover::before {
+    transform: scaleX(1);
 }
 
-.dot-submitted {
-    background: var(--blue);
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-.dot-graded {
-    background: var(--green);
-}
-
-.stat-value {
+.stat-number {
+    font-size: 2rem;
     font-weight: 700;
-    font-size: 1rem;
     color: var(--text-dark);
+    line-height: 1;
 }
 
-.stat-text {
+.stat-label {
     font-size: 0.8rem;
     color: var(--text-gray);
     font-weight: 500;
 }
 
-/* Filter Tabs */
-.filter-area {
+.stat-pending-card .stat-number {
+    color: var(--text-gray);
+}
+
+.stat-pending-card::before {
+    background: var(--text-gray);
+}
+
+.stat-submitted-card .stat-number {
+    color: var(--blue);
+}
+
+.stat-submitted-card::before {
+    background: var(--blue);
+}
+
+.stat-graded-card .stat-number {
+    color: var(--green);
+}
+
+.stat-graded-card::before {
+    background: var(--green);
+}
+
+/* Controls */
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--gray-light);
+    border-radius: 58px;
+    flex: 1;
+    max-width: 340px;
+    transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light, rgba(212, 69, 30, 0.08));
+}
+
+.search-box svg {
+    color: var(--text-gray);
+    flex-shrink: 0;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    width: 100%;
+    background: transparent;
+}
+
+.search-input::placeholder {
+    color: var(--text-gray);
+}
+
+.filter-area {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     background: var(--gray-bg);
     border-radius: 54px;
-    padding: 0.4rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+    padding: 0.35rem;
 }
 
 .filter-tab {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.6rem 1.25rem;
+    padding: 0.5rem 1rem;
     border-radius: 40px;
     border: none;
     background: transparent;
     color: var(--text-dark);
     font-weight: 500;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: var(--font);
@@ -147,151 +218,89 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Submissions List */
-.submissions-list {
-    display: flex;
-    flex-direction: column;
+.results-count {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    margin: 0 0 1rem 0;
 }
 
-.submission-card {
-    display: flex;
-    align-items: stretch;
+/* Table */
+.table-wrapper {
+    overflow-x: auto;
     border: 1px solid var(--gray-light);
-    border-bottom: none;
-    background: var(--white);
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.submission-card:first-child {
-    border-radius: 12px 12px 0 0;
-}
-
-.submission-card:last-child {
-    border-bottom: 1px solid var(--gray-light);
-    border-radius: 0 0 12px 12px;
-}
-
-.submission-card:only-child {
     border-radius: 12px;
-    border-bottom: 1px solid var(--gray-light);
 }
 
-.submission-card:hover {
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.data-table thead {
+    background: var(--gray-bg);
+}
+
+.data-table th {
+    padding: 0.875rem 1.25rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-gray);
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #f5f5f5;
+    vertical-align: middle;
+}
+
+.data-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.data-table tbody tr:hover {
     background: rgba(0, 0, 0, 0.01);
-    transform: translateX(2px);
 }
 
-.sub-stripe {
-    width: 4px;
-    flex-shrink: 0;
-}
-
-.sub-stripe.status-pending {
-    background: var(--text-gray);
-}
-
-.sub-stripe.status-submitted {
-    background: var(--blue);
-}
-
-.sub-stripe.status-graded {
-    background: var(--green);
-}
-
-.sub-stripe.status-late {
-    background: var(--red);
-}
-
-.sub-stripe.status-default {
-    background: var(--gray-light);
-}
-
-.sub-body {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    gap: 1.5rem;
-}
-
-.sub-main {
-    flex: 1;
-    min-width: 0;
-}
-
-.sub-title {
-    font-size: 1rem;
+.student-name {
     font-weight: 600;
     color: var(--text-dark);
-    margin: 0 0 0.5rem 0;
 }
 
-.sub-meta {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
+.col-date {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    white-space: nowrap;
 }
 
-.meta-item {
+.grade-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.78rem;
+    justify-content: center;
+    min-width: 36px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 8px;
+    background: var(--purple-bg);
+    color: var(--purple);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.no-grade {
     color: var(--text-gray);
 }
 
-.meta-item svg {
-    flex-shrink: 0;
-}
-
-.meta-submitted {
-    color: var(--green);
-}
-
-.sub-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-shrink: 0;
-}
-
-/* Grade Badge */
-.grade-badge {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border-radius: 12px;
-    background: var(--purple-bg);
-}
-
-.grade-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--purple);
-    line-height: 1;
-}
-
-.grade-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--purple);
-    font-weight: 600;
-    margin-top: 0.15rem;
-}
-
-/* Status Badge */
 .status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.85rem;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
     border-radius: 58px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -394,26 +403,26 @@
         font-size: 1.75rem;
     }
 
-    .sub-body {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .controls-row {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding: 1rem 1.25rem;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
     }
 }
 
 @media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
     .heading-title {
         font-size: 1.5rem;
-    }
-
-    .stats-row {
-        flex-direction: column;
-    }
-
-    .sub-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
     }
 }

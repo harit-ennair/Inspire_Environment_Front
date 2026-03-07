@@ -1,1 +1,123 @@
-<p>submissions works!</p>
+<div class="submissions-page">
+
+    <div class="page-header">
+        <div class="heading-style">
+            <h4 class="heading-label">Assignments</h4>
+            <h2 class="heading-title">My Submissions</h2>
+        </div>
+    </div>
+
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your submissions...</p>
+    </div>
+    }
+
+    @if (error()) {
+    <div class="error-state">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error() }}</p>
+        <button class="retry-btn" (click)="loadSubmissions()">Retry</button>
+    </div>
+    }
+
+    @if (!loading() && !error()) {
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-pill">
+            <span class="stat-dot dot-pending"></span>
+            <span class="stat-value">{{ totalPending() }}</span>
+            <span class="stat-text">Pending</span>
+        </div>
+        <div class="stat-pill">
+            <span class="stat-dot dot-submitted"></span>
+            <span class="stat-value">{{ totalSubmitted() }}</span>
+            <span class="stat-text">Submitted</span>
+        </div>
+        <div class="stat-pill">
+            <span class="stat-dot dot-graded"></span>
+            <span class="stat-value">{{ totalGraded() }}</span>
+            <span class="stat-text">Graded</span>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-area">
+        @for (status of STATUS_FILTERS; track status) {
+        <button class="filter-tab" [class.active]="filterStatus() === status" (click)="setFilter(status)">
+            {{ status === 'ALL' ? 'All' : status }}
+        </button>
+        }
+    </div>
+
+    <!-- Submissions List -->
+    @if (filteredSubmissions().length === 0) {
+    <div class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>No submissions found.</p>
+    </div>
+    } @else {
+    <div class="submissions-list">
+        @for (sub of filteredSubmissions(); track sub.id) {
+        <div class="submission-card">
+            <div class="sub-stripe" [ngClass]="getStatusClass(sub.status)"></div>
+            <div class="sub-body">
+                <div class="sub-main">
+                    <h3 class="sub-title">{{ sub.task?.title || sub.taskTitle || 'Untitled Task' }}</h3>
+                    <div class="sub-meta">
+                        @if (sub.task?.activity?.title || sub.activityTitle) {
+                        <span class="meta-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            {{ sub.task?.activity?.title || sub.activityTitle }}
+                        </span>
+                        }
+                        @if (sub.task?.deadline || sub.deadline) {
+                        <span class="meta-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            Due: {{ formatDate(sub.task?.deadline || sub.deadline) }}
+                        </span>
+                        }
+                        @if (sub.submittedAt) {
+                        <span class="meta-item meta-submitted">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" />
+                                <path d="M22 4L12 14.01l-3-3" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Submitted: {{ formatDateTime(sub.submittedAt) }}
+                        </span>
+                        }
+                    </div>
+                </div>
+                <div class="sub-right">
+                    @if (sub.grade !== undefined && sub.grade !== null) {
+                    <div class="grade-badge">
+                        <span class="grade-value">{{ sub.grade }}</span>
+                        <span class="grade-label">Grade</span>
+                    </div>
+                    }
+                    <div class="status-badge" [ngClass]="getStatusClass(sub.status)">
+                        <span>{{ getStatusIcon(sub.status) }}</span>
+                        <span>{{ sub.status || 'PENDING' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    }
+</div>

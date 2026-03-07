@@ -41,6 +41,16 @@ export const STAFF_ROUTES: Routes = [
         loadComponent: () =>
           import('./presence/presence').then(m => m.Presence),
       },
+      {
+        path: 'submissions',
+        loadComponent: () =>
+          import('./submissions/submissions').then(m => m.StaffSubmissions),
+      },
+      {
+        path: 'tasks',
+        loadComponent: () =>
+          import('./tasks/tasks').then(m => m.StaffTasks),
+      },
     ]
   },
 ];

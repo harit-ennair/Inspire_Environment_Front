@@ -24,6 +24,8 @@ export class AdminLayout {
         { label: 'Students', path: '/admin/students' },
         { label: 'Activities', path: '/admin/activities' },
         { label: 'Presence', path: '/admin/presence' },
+        { label: 'Submissions', path: '/admin/submissions' },
+        { label: 'Tasks', path: '/admin/tasks' },
     ];
 
     mobileMenuOpen = false;
