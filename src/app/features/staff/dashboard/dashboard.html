@@ -7,106 +7,125 @@
     </div>
     <div class="hero-content">
       <div class="hero-badge">{{ today | date: 'EEEE, MMMM d, y' }}</div>
-      <h1 class="hero-title">Staff Dashboard</h1>
-      <p class="hero-subtitle">Empowering education through collaboration, innovation, and excellence</p>
-      <div class="hero-divider"></div>
+      <h2 class="hero-welcome">Welcome back,</h2>
+      <h1 class="hero-title">{{ userName }}</h1>
     </div>
+    <!-- <div class="hero-logo-container">
+      <div class="circle-logo">
+        <span class="logo-text">IE</span>
+        <span class="logo-sub">Inspire<br>Environment</span>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- Mission Section -->
+  <div class="mission-section">
+    <div class="heading-style">
+      <h4 class="heading-label">Mission Statement</h4>
+      <h2 class="heading-title">Staff Dashboard</h2>
+    </div>
+    <p class="mission-text">Empowering education through collaboration, innovation, and excellence.
+      Together we build transformative opportunities for our students and community.</p>
+    <div class="separator"></div>
   </div>
 
   <!-- Stats Section -->
   <div class="stats-section">
-    <div class="section-header">
-      <h2 class="section-title">Platform Overview</h2>
-      <p class="section-description">Welcome back, {{ userName }}!</p>
+    <div class="section-header-row">
+      <div class="heading-style">
+        <h4 class="heading-label">Platform Overview</h4>
+        <h2 class="heading-title">Key Metrics</h2>
+      </div>
     </div>
+
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon">🎓</span>
-          <span class="stat-label">Total Students</span>
+        <div class="stat-inner">
+          <span class="stat-number">{{ totalStudents() }}</span>
+          <h4 class="stat-label">Total Students</h4>
+          <p class="stat-desc">Active learners on the platform</p>
         </div>
-        <div class="stat-middle">
-          <span class="stat-value">{{ totalStudents() }}</span>
-        </div>
-        <div class="stat-bottom">
-          <a routerLink="/staff/students" class="pill-button">
-            <span>Learn more</span>
+        <a routerLink="/staff/students" class="pill-button pill-light">
+          <span>Learn more</span>
+          <span class="pill-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </a>
-        </div>
+          </span>
+        </a>
       </div>
 
       <div class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon">👨‍🏫</span>
-          <span class="stat-label">Total Staff</span>
+        <div class="stat-inner">
+          <span class="stat-number">{{ totalStaff() }}</span>
+          <h4 class="stat-label">Total Staff</h4>
+          <p class="stat-desc">Teaching & support personnel</p>
         </div>
-        <div class="stat-middle">
-          <span class="stat-value">{{ totalStaff() }}</span>
-        </div>
-        <div class="stat-bottom">
-          <a routerLink="/admin/staff" class="pill-button">
-            <span>Learn more</span>
+        <a routerLink="/admin/staff" class="pill-button pill-light">
+          <span>Learn more</span>
+          <span class="pill-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </a>
-        </div>
+          </span>
+        </a>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon">🏢</span>
-          <span class="stat-label">Departments</span>
+      <div class="stat-card stat-card-accent">
+        <div class="stat-inner">
+          <span class="stat-number">{{ totalDepartments() }}</span>
+          <h4 class="stat-label">Departments</h4>
+          <p class="stat-desc">Academic & administrative units</p>
         </div>
-        <div class="stat-middle">
-          <span class="stat-value">{{ totalDepartments() }}</span>
-        </div>
-        <div class="stat-bottom">
-          <a routerLink="/admin/departments" class="pill-button">
-            <span>Learn more</span>
+        <a routerLink="/admin/departments" class="pill-button pill-dark">
+          <span>Learn more</span>
+          <span class="pill-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </a>
-        </div>
+          </span>
+        </a>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon">📋</span>
-          <span class="stat-label">Activities</span>
+      <div class="stat-card stat-card-accent">
+        <div class="stat-inner">
+          <span class="stat-number">{{ totalActivities() }}</span>
+          <h4 class="stat-label">Activities</h4>
+          <p class="stat-desc">Programs & events running</p>
         </div>
-        <div class="stat-middle">
-          <span class="stat-value">{{ totalActivities() }}</span>
-        </div>
-        <div class="stat-bottom">
-          <a routerLink="/staff/activities" class="pill-button">
-            <span>Learn more</span>
+        <a routerLink="/staff/activities" class="pill-button pill-dark">
+          <span>Learn more</span>
+          <span class="pill-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </a>
-        </div>
+          </span>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- Main Content -->
+  <div class="section-separator">
+    <hr>
+  </div>
+
+  <!-- Content Grid -->
   <div class="content-grid">
 
     <!-- Recent Activities -->
     <div class="panel">
       <div class="panel-header">
-        <h2 class="panel-title">Recent Activities</h2>
-        <a routerLink="/staff/activities" class="panel-action">
-          <span>See all</span>
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
+        <div class="heading-style">
+          <h4 class="heading-label">Actualités et événements</h4>
+          <h2 class="heading-title">Recent Activities</h2>
+        </div>
+        <a routerLink="/staff/activities" class="pill-button-outline">
+          <span>See all activities</span>
+          <span class="pill-icon-dark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7v10" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
         </a>
       </div>
 
@@ -143,13 +162,21 @@
     <!-- Quick Navigation -->
     <div class="panel">
       <div class="panel-header">
-        <h2 class="panel-title">Quick Navigation</h2>
+        <div class="heading-style">
+          <h4 class="heading-label">Quick Access</h4>
+          <h2 class="heading-title">Navigation</h2>
+        </div>
       </div>
       <div class="nav-grid">
         @for (item of navItems; track item.route) {
         <a [routerLink]="item.route" class="nav-card">
           <span class="nav-icon">{{ item.icon }}</span>
           <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7v10" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
         </a>
         }
       </div>
