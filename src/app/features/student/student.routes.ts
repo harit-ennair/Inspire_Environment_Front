@@ -26,16 +26,6 @@ export const STUDENT_ROUTES: Routes = [
         loadComponent: () =>
           import('./activities/activities').then(m => m.Activities),
       },
-      {
-        path: 'tasks',
-        loadComponent: () =>
-          import('./tasks/tasks').then(m => m.Tasks),
-      },
-      {
-        path: 'submissions',
-        loadComponent: () =>
-          import('./submissions/submissions').then(m => m.Submissions),
-      },
     ]
   },
 ];

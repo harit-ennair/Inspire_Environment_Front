@@ -58,7 +58,7 @@ export class ActivitiesAttendance implements OnInit {
         } else if (err.status === 500) {
           this.error.set(`Server error (500): ${err.error?.message ?? 'An internal server error occurred. Please check the backend.'}`);
         } else if (err.status === 0) {
-          this.error.set('Cannot reach the server. Make sure the backend is running on http://localhost:8080.');
+          this.error.set('Cannot reach the server.');
         } else {
           this.error.set(`Error ${err.status}: ${err.error?.message ?? err.message}`);
         }

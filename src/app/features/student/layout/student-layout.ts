@@ -21,8 +21,6 @@ export class StudentLayout {
         { label: 'Dashboard', path: '/student/dashboard' },
         { label: 'Activities', path: '/student/activities' },
         { label: 'Presence', path: '/student/presence' },
-        { label: 'Tasks', path: '/student/tasks' },
-        { label: 'Submissions', path: '/student/submissions' },
     ];
 
     mobileMenuOpen = false;

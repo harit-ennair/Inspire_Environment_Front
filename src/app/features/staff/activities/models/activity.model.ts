@@ -37,7 +37,6 @@ export interface Activity {
   managedBy?: string;   // display name in response
   staff?: StaffDetail;  // single object in response
   attendances?: Attendance[];
-  tasks?: any[];
   // optional extras some endpoints may return
   description?: string;
   location?: string;

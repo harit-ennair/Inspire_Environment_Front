@@ -42,8 +42,6 @@ export class Dashboard implements OnInit {
   navItems = [
     { label: 'Activities', icon: '📋', route: '/student/activities' },
     { label: 'Presence', icon: '📍', route: '/student/presence' },
-    { label: 'Tasks', icon: '✅', route: '/student/tasks' },
-    { label: 'Submissions', icon: '📤', route: '/student/submissions' },
   ];
 
   ngOnInit(): void {

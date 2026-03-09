@@ -195,7 +195,7 @@
                 </div>
             </div>
             <div class="nav-grid">
-                @for (item of navItems; track item.route) {
+                @for (item of navItems; track item.label) {
                 <a [routerLink]="item.route" class="nav-card">
                     <span class="nav-icon">{{ item.icon }}</span>
                     <span class="nav-label">{{ item.label }}</span>
