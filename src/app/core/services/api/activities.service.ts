@@ -51,7 +51,7 @@ export class ActivitiesService {
   getActivitiesThisWeekByDepartment(departmentId: number): Observable<any> {
     return this.http.get(`${this.activitiesApi}/this-week/department/${departmentId}`);
   }
-
+// *********************************
   searchActivities(title: string): Observable<any> {
     return this.http.get(`${this.activitiesApi}/search?title=${title}`);
   }
