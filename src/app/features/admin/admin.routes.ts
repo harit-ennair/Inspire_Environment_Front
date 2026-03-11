@@ -1,10 +1,13 @@
 import { Routes } from '@angular/router';
+import { LAYOUT_ROUTES } from '../layout/layout.routes';
+import { roleGuard } from '../../core/guards/role.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
+    ...LAYOUT_ROUTES.find(r => r.path === 'admin')!,
     path: '',
-    loadComponent: () =>
-      import('./layout/admin-layout').then(m => m.AdminLayout),
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
     children: [
       {
         path: '',

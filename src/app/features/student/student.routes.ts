@@ -1,10 +1,13 @@
 import { Routes } from '@angular/router';
+import { LAYOUT_ROUTES } from '../layout/layout.routes';
+import { roleGuard } from '../../core/guards/role.guard';
 
 export const STUDENT_ROUTES: Routes = [
   {
+    ...LAYOUT_ROUTES.find(r => r.path === 'student')!,
     path: '',
-    loadComponent: () =>
-      import('./layout/student-layout').then(m => m.StudentLayout),
+    canActivate: [roleGuard],
+    data: { roles: ['student', 'staff','admin'] },
     children: [
       {
         path: '',
