@@ -37,9 +37,12 @@ export class Dashboard implements OnInit {
   today = new Date();
 
   navItems = [
-    { label: 'Students',    icon: '', route: '/staff/students',    color: 'card-blue' },
-    { label: 'Activities',  icon: '', route: '/staff/activities',   color: 'card-orange' },
-    { label: 'Presence',    icon: '', route: '/staff/presence',     color: 'card-indigo' },
+    { label: 'Students',    icon: '', route: '/admin/students',    color: 'card-blue' },
+    { label: 'Staff',       icon: '', route: '/admin/staff',       color: 'card-green' },
+    { label: 'Departments', icon: '', route: '/admin/departments',  color: 'card-purple' },
+    { label: 'Activities',  icon: '', route: '/admin/activities',   color: 'card-orange' },
+    { label: 'Roles',       icon: '', route: '/admin/roles',        color: 'card-red' },
+    { label: 'Presence',    icon: '', route: '/admin/presence',     color: 'card-indigo' },
   ];
 
   ngOnInit(): void {

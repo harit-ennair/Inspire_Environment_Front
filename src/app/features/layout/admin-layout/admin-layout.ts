@@ -33,17 +33,13 @@ export class AdminLayout {
     closeMenu(): void { this.mobileMenuOpen = false; }
 
     logout(): void {
-        const token = this.authService.getToken();
-        if (token) {
-            this.authService.logout(token).pipe(
-                finalize(() => {
-                    this.authService.clearStorage();
-                    this.router.navigate(['/login']);
-                })
-            ).subscribe();
-        } else {
-            this.authService.clearStorage();
-            this.router.navigate(['/login']);
-        }
+        this.authService.logout().subscribe({
+            next: () => {
+                this.authService.clearStorage();
+                this.router.navigate(['/login']);
+            },
+            error: (err) => {
+                console.error('Logout failed:', err);
+            }});
     }
 }
