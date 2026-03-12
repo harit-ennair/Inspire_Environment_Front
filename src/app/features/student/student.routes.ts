@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { LAYOUT_ROUTES } from '../layout/layout.routes';
 import { roleGuard } from '../../core/guards/role.guard';
+import { NavbarComponent } from '../layout/navbar/navbar';
 
 export const STUDENT_ROUTES: Routes = [
   {
-    ...LAYOUT_ROUTES.find(r => r.path === 'student')!,
     path: '',
+    component: NavbarComponent,
     canActivate: [roleGuard],
     data: { roles: ['student', 'staff','admin'] },
     children: [

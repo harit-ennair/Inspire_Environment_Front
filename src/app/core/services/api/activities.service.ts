@@ -52,10 +52,6 @@ export class ActivitiesService {
     return this.http.get(`${this.activitiesApi}/this-week/department/${departmentId}`);
   }
 
-  searchActivities(title: string): Observable<any> {
-    return this.http.get(`${this.activitiesApi}/search?title=${title}`);
-  }
-
   assignStudentToActivity(activityId: number, studentId: number): Observable<any> {
     return this.http.post(`${this.activitiesApi}/${activityId}/assign-student/${studentId}`, {});
   }

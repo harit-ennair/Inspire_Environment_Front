@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { LAYOUT_ROUTES } from '../layout/layout.routes';
 import { roleGuard } from '../../core/guards/role.guard';
+import { NavbarComponent } from '../layout/navbar/navbar';
 
 export const ADMIN_ROUTES: Routes = [
   {
-    ...LAYOUT_ROUTES.find(r => r.path === 'admin')!,
     path: '',
+    component: NavbarComponent,
     canActivate: [roleGuard],
     data: { role: 'admin' },
     children: [
@@ -17,7 +17,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('../staff/dashboard/dashboard').then(m => m.Dashboard),
+          import('../admin/dashboard/dashboard').then(m => m.Dashboard),
       },
       {
         path: 'roles',

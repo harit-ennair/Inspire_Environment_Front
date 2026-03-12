@@ -12,17 +12,15 @@ export class PresenceService {
 
   constructor(private http: HttpClient) {}
 
-  //********************
   checkInPresence(studentId: number): Observable<any> {
     return this.http.post(`${this.presenceApi}/check-in/${studentId}`, {});
   }
 
-  //********************
   checkOutPresence(studentId: number): Observable<any> {
     return this.http.post(`${this.presenceApi}/check-out/${studentId}`, {});
   }
 
-  //********************
+  //+++++++++++++++++++
   createPresence(data: any): Observable<any> {
     return this.http.post(this.presenceApi, data);
   }
@@ -40,7 +38,6 @@ export class PresenceService {
     return this.http.get(this.presenceApi);
   }
 
-  //********************
   getPresencesByStudent(studentId: number): Observable<any> {
     return this.http.get(`${this.presenceApi}/student/${studentId}`);
   }
@@ -60,7 +57,7 @@ export class PresenceService {
     return this.http.get(`${this.presenceApi}/student/${studentId}/date-range?start=${start}&end=${end}`);
   }
 
-  //********************
+  //++++++++++++++
   getActivePresences(): Observable<any> {
     return this.http.get(`${this.presenceApi}/active`);
   }
