@@ -1,4 +1,4 @@
-﻿/* ===== Design Tokens ===== */
+/* ===== Design Tokens ===== */
 :host {
   --primary: #d4451e;
   --primary-hover: #b83a18;
@@ -253,6 +253,58 @@
 
 .pill-danger-sm:hover {
   background: #dc2626;
+}
+
+/* ===== View Navigation ===== */
+.view-navigation {
+  padding: 0 80px;
+  max-width: 1600px;
+  margin: 2rem auto 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 2px solid var(--gray-light);
+  padding-bottom: 0;
+}
+
+.view-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  color: var(--text-gray);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.3s ease;
+  position: relative;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.view-link svg {
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.view-link:hover {
+  color: var(--primary);
+}
+
+.view-link:hover svg {
+  opacity: 1;
+}
+
+.view-link.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.view-link.active svg {
+  opacity: 1;
+  color: var(--primary);
 }
 
 /* ===== Filters Section ===== */

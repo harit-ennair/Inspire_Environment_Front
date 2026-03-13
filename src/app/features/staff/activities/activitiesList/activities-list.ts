@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ActivitiesService } from '../../../../core/services/api/activities.service';
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
 import { Activity } from '../models/activity.model';
@@ -9,7 +9,7 @@ import { Activity } from '../models/activity.model';
 @Component({
   selector: 'app-activities-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './activities-list.html',
   styleUrls: ['./activities-list.css'],
 })
