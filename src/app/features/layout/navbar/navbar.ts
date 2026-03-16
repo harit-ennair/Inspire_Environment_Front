@@ -19,7 +19,7 @@ export class NavbarComponent {
     userRole = this.authService.getRole()?.toLowerCase() || 'student';
 
     adminNavLinks = [
-        { label: 'Dashboard', path: '/admin/dashboard' },
+        { label: 'Dashboard', path: '/dashboard' },
         { label: 'Roles', path: '/admin/roles' },
         { label: 'Departments', path: '/admin/departments' },
         { label: 'Staff', path: '/admin/staff' },
@@ -29,7 +29,7 @@ export class NavbarComponent {
     ];
 
     staffNavLinks = [
-        { label: 'Dashboard', path: '/staff/dashboard' },
+        { label: 'Dashboard', path: '/dashboard' },
         { label: 'Students', path: '/staff/students' },
         { label: 'Activities', path: '/staff/activities' },
         { label: 'Presence', path: '/staff/presence' },
@@ -54,8 +54,7 @@ export class NavbarComponent {
     // Dynamic dashboard path based on role
     get dashboardPath() {
         const role = this.userRole;
-        if (role === 'admin') return '/admin/dashboard';
-        if (role === 'staff') return '/staff/dashboard';
+        if (role === 'admin' || role === 'staff') return '/dashboard';
         return '/student/dashboard';
     }
 

@@ -11,13 +11,8 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: '/dashboard',
         pathMatch: 'full'
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('../admin/dashboard/dashboard').then(m => m.Dashboard),
       },
       {
         path: 'roles',

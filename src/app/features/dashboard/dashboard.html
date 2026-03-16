@@ -10,14 +10,13 @@
       <h2 class="hero-welcome">Welcome back,</h2>
       <h1 class="hero-title">{{ userName }}</h1>
     </div>
-
   </div>
 
   <!-- Mission Section -->
   <div class="mission-section">
     <div class="heading-style">
       <h4 class="heading-label">Mission Statement</h4>
-      <h2 class="heading-title">admin Dashboard</h2>
+      <h2 class="heading-title">{{ role | titlecase }} Dashboard</h2>
     </div>
     <p class="mission-text">Empowering education through collaboration, innovation, and excellence.
       Together we build transformative opportunities for our students and community.</p>
@@ -34,13 +33,14 @@
     </div>
 
     <div class="stats-grid">
+      <!-- Students Stat -->
       <div class="stat-card">
         <div class="stat-inner">
           <span class="stat-number">{{ totalStudents() }}</span>
           <h4 class="stat-label">Total Students</h4>
           <p class="stat-desc">Active learners on the platform</p>
         </div>
-        <a routerLink="/admin/students" class="pill-button pill-light">
+        <a [routerLink]="role === 'ADMIN' ? '/admin/students' : '/staff/students'" class="pill-button pill-light">
           <span>Learn more</span>
           <span class="pill-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -50,45 +50,52 @@
         </a>
       </div>
 
+      <!-- Staff Stat (Full for Admin, Info only for Staff) -->
       <div class="stat-card">
         <div class="stat-inner">
           <span class="stat-number">{{ totalStaff() }}</span>
           <h4 class="stat-label">Total Staff</h4>
           <p class="stat-desc">Teaching & support personnel</p>
         </div>
-        <a routerLink="/admin/staff" class="pill-button pill-light">
-          <span>Learn more</span>
-          <span class="pill-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </span>
-        </a>
+        @if (role === 'ADMIN') {
+          <a routerLink="/admin/staff" class="pill-button pill-light">
+            <span>Learn more</span>
+            <span class="pill-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        }
       </div>
 
+      <!-- Departments Stat (Full for Admin, Info only for Staff) -->
       <div class="stat-card stat-card-accent">
         <div class="stat-inner">
           <span class="stat-number">{{ totalDepartments() }}</span>
           <h4 class="stat-label">Departments</h4>
           <p class="stat-desc">Academic & administrative units</p>
         </div>
-        <a routerLink="/admin/departments" class="pill-button pill-dark">
-          <span>Learn more</span>
-          <span class="pill-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </span>
-        </a>
+        @if (role === 'ADMIN') {
+          <a routerLink="/admin/departments" class="pill-button pill-dark">
+            <span>Learn more</span>
+            <span class="pill-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        }
       </div>
 
+      <!-- Activities Stat -->
       <div class="stat-card stat-card-accent">
         <div class="stat-inner">
           <span class="stat-number">{{ totalActivities() }}</span>
           <h4 class="stat-label">Activities</h4>
           <p class="stat-desc">Programs & events running</p>
         </div>
-        <a routerLink="/admin/activities" class="pill-button pill-dark">
+        <a [routerLink]="role === 'ADMIN' ? '/admin/activities' : '/staff/activities'" class="pill-button pill-dark">
           <span>Learn more</span>
           <span class="pill-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -114,7 +121,7 @@
           <h4 class="heading-label">Actualités et événements</h4>
           <h2 class="heading-title">Recent Activities</h2>
         </div>
-        <a routerLink="/staff/activities" class="pill-button-outline">
+        <a [routerLink]="role === 'ADMIN' ? '/admin/activities' : '/staff/activities'" class="pill-button-outline">
           <span>See all activities</span>
           <span class="pill-icon-dark">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -142,7 +149,7 @@
             <span class="activity-name">{{ activity.title }}</span>
             <span class="activity-meta">{{ activity.departmentName || 'General' }}</span>
           </div>
-          <a [routerLink]="['/staff/activities', activity.id]" class="activity-view">
+          <a [routerLink]="[role === 'ADMIN' ? '/admin/activities' : '/staff/activities', activity.id]" class="activity-view">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" />

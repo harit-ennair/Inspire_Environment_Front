@@ -11,13 +11,8 @@ export const STAFF_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: '/dashboard',
         pathMatch: 'full'
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./dashboard/dashboard').then(m => m.Dashboard),
       },
       {
         path: 'students',

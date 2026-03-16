@@ -52,7 +52,7 @@ export class ActivityCreate implements OnInit {
       next: (created: any) => {
         this.loading.set(false);
         this.success.set(true);
-        setTimeout(() => this.router.navigate(['/admin/activities', created.id]), 1200);
+        setTimeout(() => this.router.navigate(['/staff/activities', created.id]), 1200);
       },
       error: () => {
         this.error.set('Failed to create activity. Please try again.');
@@ -75,6 +75,6 @@ export class ActivityCreate implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/admin/activities']);
+    this.router.navigate(['/staff/activities']);
   }
 }

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { NavbarComponent } from './features/layout/navbar/navbar';
 
 export const routes: Routes = [
   // ==========================================
@@ -8,6 +9,18 @@ export const routes: Routes = [
     path: '',
     redirectTo: '/login',
     pathMatch: 'full'
+  },
+
+  {
+    path: 'dashboard',
+    component: NavbarComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard').then(m => m.Dashboard),
+      }
+    ]
   },
 
   // ==========================================

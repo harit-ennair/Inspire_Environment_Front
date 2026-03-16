@@ -120,10 +120,10 @@ export class ActivitiesList implements OnInit {
   }
 
   viewDetails(id: number): void {
-    this.router.navigate(['/admin/activities', id]);
+    this.router.navigate(['/staff/activities', id]);
   }
 
   editActivity(id: number): void {
-    this.router.navigate(['/admin/activities', id, 'edit']);
+    this.router.navigate(['/staff/activities', id, 'edit']);
   }
 }
