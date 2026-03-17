@@ -79,7 +79,7 @@ export class StudentsList implements OnInit {
   }
 
   deleteStudent(id: number) {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm('Are you sure you want to delete this student and his attendance records?')) {
       this.studentsService.deleteStudent(id).subscribe(() => {
         this.students.set(this.students().filter(s => s.id !== id));
       });

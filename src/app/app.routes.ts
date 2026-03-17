@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { NavbarComponent } from './features/layout/navbar/navbar';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   // ==========================================
@@ -14,6 +15,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: NavbarComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['staff','admin'] },
     children: [
       {
         path: '',
@@ -36,6 +39,8 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'admin',
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
     loadChildren: () =>
       import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
   },
@@ -45,6 +50,8 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'staff',
+    canActivate: [roleGuard],
+    data: { roles: ['staff','admin'] },
     loadChildren: () =>
       import('./features/staff/staff.routes').then(m => m.STAFF_ROUTES)
   },
@@ -54,6 +61,8 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'student',
+    canActivate: [roleGuard],
+    data: { roles: ['student','staff','admin'] },
     loadChildren: () =>
       import('./features/student/student.routes').then(m => m.STUDENT_ROUTES)
   },
