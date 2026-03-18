@@ -29,6 +29,16 @@ export const STUDENT_ROUTES: Routes = [
         loadComponent: () =>
           import('./activities/activities').then(m => m.Activities),
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('../profile/profile/profile').then(m => m.Profile),
+      },
+      {
+        path: 'profile/edit',
+        loadComponent: () =>
+          import('../profile/profile-form/profile-form').then(m => m.ProfileForm),
+      },
     ]
   },
 ];

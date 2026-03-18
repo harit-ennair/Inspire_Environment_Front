@@ -19,26 +19,29 @@ export class NavbarComponent {
     userRole = this.authService.getRole()?.toLowerCase() || 'student';
 
     adminNavLinks = [
-        { label: 'Dashboard', path: '/dashboard' },
-        { label: 'Roles', path: '/admin/roles' },
-        { label: 'Departments', path: '/admin/departments' },
-        { label: 'Staff', path: '/admin/staff' },
-        { label: 'Students', path: '/admin/students' },
-        { label: 'Activities', path: '/admin/activities' },
-        { label: 'Presence', path: '/admin/presence' },
+        { label: 'Dashboard', path: '/dashboard', exact: true },
+        { label: 'Profile', path: '/dashboard/profile', exact: false },
+        { label: 'Roles', path: '/admin/roles', exact: false },
+        { label: 'Departments', path: '/admin/departments', exact: false },
+        { label: 'Staff', path: '/admin/staff', exact: false },
+        { label: 'Students', path: '/admin/students', exact: false },
+        { label: 'Activities', path: '/admin/activities', exact: false },
+        { label: 'Presence', path: '/admin/presence', exact: false },
     ];
 
     staffNavLinks = [
-        { label: 'Dashboard', path: '/dashboard' },
-        { label: 'Students', path: '/staff/students' },
-        { label: 'Activities', path: '/staff/activities' },
-        { label: 'Presence', path: '/staff/presence' },
+        { label: 'Dashboard', path: '/dashboard', exact: true },
+        { label: 'Profile', path: '/dashboard/profile', exact: false },
+        { label: 'Students', path: '/staff/students', exact: false },
+        { label: 'Activities', path: '/staff/activities', exact: false },
+        { label: 'Presence', path: '/staff/presence', exact: false },
     ];
 
     studentNavLinks = [
-        { label: 'Dashboard', path: '/student/dashboard' },
-        { label: 'Activities', path: '/student/activities' },
-        { label: 'Presence', path: '/student/presence' },
+        { label: 'Dashboard', path: '/student/dashboard', exact: true },
+        { label: 'Profile', path: '/student/profile', exact: false },
+        { label: 'Activities', path: '/student/activities', exact: false },
+        { label: 'Presence', path: '/student/presence', exact: false },
     ];
 
     mobileMenuOpen = false;

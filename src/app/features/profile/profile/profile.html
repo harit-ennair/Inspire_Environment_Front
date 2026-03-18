@@ -1,0 +1,97 @@
+<div class="dashboard">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-image">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">{{ today | date: 'EEEE, MMMM d, y' }}</div>
+      <h2 class="hero-welcome">Profile Overview</h2>
+      <h1 class="hero-title">{{ userName }}</h1>
+    </div>
+  </div>
+
+  <!-- Profile Content Area -->
+  <div class="mission-section">
+    <div class="heading-style">
+      <h4 class="heading-label">Manage your account</h4>
+      <h2 class="heading-title">Account Overview</h2>
+    </div>
+    <div class="separator"></div>
+
+    <div class="content-grid">
+      <!-- User Info Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="heading-style">
+            <h4 class="heading-label">Personal Information</h4>
+            <h2 class="heading-title">Details</h2>
+          </div>
+          <a routerLink="edit" class="pill-button-outline">
+            <span>Edit Profile</span>
+            <span class="pill-icon-dark">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        </div>
+
+        @if (loading() && !user()) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading your profile...</p>
+          </div>
+        } @else if (error() && !user()) {
+          <div class="empty-state">
+            <span class="empty-icon">⚠️</span>
+            <p>{{ error() }}</p>
+          </div>
+        } @else if (user()) {
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">First Name</span>
+              <span class="info-value">{{ user().firstName || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Last Name</span>
+              <span class="info-value">{{ user().lastName || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Email Address</span>
+              <span class="info-value">{{ user().email || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Role</span>
+              <span class="info-value badge">{{ user().role || 'User' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Quick Stats / Additional Info Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="heading-style">
+            <h4 class="heading-label">System Activity</h4>
+            <h2 class="heading-title">Membership</h2>
+          </div>
+        </div>
+        <div class="nav-grid">
+          <div class="nav-card">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">Member Since</span>
+            <span class="info-value small">{{ today | date:'mediumDate' }}</span>
+          </div>
+          <div class="nav-card">
+            <span class="nav-icon">🔒</span>
+            <span class="nav-label">Security</span>
+            <span class="info-value small">Active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

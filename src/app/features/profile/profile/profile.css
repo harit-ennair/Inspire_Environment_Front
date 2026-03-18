@@ -1,0 +1,290 @@
+/* ===== Design Tokens (Consistent with Dashboard) ===== */
+:host {
+  --primary: #d4451e;
+  --primary-light: #ec6235;
+  --text-dark: #222429;
+  --text-gray: #8f8f8f;
+  --gray-light: #e6e6e6;
+  --gray-bg: #f0f1f6;
+  --white: #ffffff;
+  --black: #222429;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.dashboard {
+  background: var(--white);
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text-dark);
+}
+
+/* ===== Heading Style ===== */
+.heading-style {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.heading-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-gray);
+  font-weight: 500;
+  margin: 0;
+}
+
+.heading-title {
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ===== Hero Banner ===== */
+.hero-banner {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background-color: var(--black);
+}
+
+.hero-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-image: url('/images/dashbord.JPG');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg,
+      rgba(34, 36, 41, 0.2) 0%,
+      rgba(34, 36, 41, 0.7) 100%);
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: left;
+  color: var(--white);
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 58px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--white);
+}
+
+.hero-welcome {
+  font-size: 1.5rem;
+  font-weight: 200;
+  color: var(--white);
+  margin: 0 0 0.5rem 0;
+  opacity: 0.9;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+/* ===== Content Area ===== */
+.mission-section {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 60px 80px;
+}
+
+.separator {
+  width: 60px;
+  height: 3px;
+  background: var(--primary);
+  margin: 2rem 0 3rem;
+  border-radius: 2px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 3rem;
+}
+
+.panel {
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  padding: 3rem;
+  transition: all 0.4s ease;
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--gray-light);
+  gap: 1rem;
+}
+
+/* ===== Info List ===== */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-gray);
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.info-value.badge {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  background: var(--gray-bg);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  width: fit-content;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ===== Pill Buttons ===== */
+.pill-button-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+  border-radius: 58px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  background: var(--white);
+  color: var(--text-dark);
+  border: 1px solid var(--text-dark);
+  transition: all 0.4s ease;
+  gap: 0.75rem;
+}
+
+.pill-button-outline:hover {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.pill-icon-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--text-dark);
+  color: var(--white);
+  transition: all 0.4s ease;
+}
+
+.pill-button-outline:hover .pill-icon-dark {
+  background: var(--white);
+  color: var(--primary);
+}
+
+/* ===== Multi-card Grid ===== */
+.nav-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.nav-card {
+  padding: 2rem;
+  background: var(--gray-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dark);
+}
+
+.info-value.small {
+  font-size: 1rem;
+}
+
+/* ===== Loading State ===== */
+.loading-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 0;
+  color: var(--text-gray);
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--gray-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 992px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: 2.5rem; }
+  .mission-section { padding: 40px 20px; }
+  .hero-content { padding: 0 20px; }
+}
