@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { PresenceService } from '../../../../core/services/api/presence.service';
@@ -20,6 +20,7 @@ export class Presence implements OnInit {
   private departmentsService = inject(DepartmentsService);
   private studentsService   = inject(StudentsService);
   private router            = inject(Router);
+  private route             = inject(ActivatedRoute);
 
   presences         = signal<any[]>([]);
   filteredPresences = signal<any[]>([]);
@@ -233,7 +234,7 @@ export class Presence implements OnInit {
   }
 
   openEditForm(id: number): void {
-    this.router.navigate(['/staff/presence/edit', id]);
+    this.router.navigate(['edit', id], { relativeTo: this.route });
   }
 
 

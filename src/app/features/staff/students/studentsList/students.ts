@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { StudentsService } from '../../../../core/services/api/students.service';
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
 
@@ -18,6 +18,7 @@ export class StudentsList implements OnInit {
   private studentsService = inject(StudentsService);
   private departmentsService = inject(DepartmentsService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   // Signals
   students = signal<any[]>([]);
@@ -132,7 +133,7 @@ export class StudentsList implements OnInit {
   }
 
   editStudent(id: number) {
-    this.router.navigate(['/admin/students/edit', id]);
+    this.router.navigate(['edit', id], { relativeTo: this.route });
   }
 
   deleteStudent(id: number) {

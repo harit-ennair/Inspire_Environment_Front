@@ -17,18 +17,20 @@ export const STAFF_ROUTES: Routes = [
       },
       {
         path: 'students',
-        loadComponent: () =>
-          import('./students/studentsList/students').then(m => m.StudentsList),
-      },
-      {
-        path: 'students/create',
-        loadComponent: () =>
-          import('./students/studentsForm/students').then(m => m.StudentsForm),
-      },
-      {
-        path: 'students/edit/:id',
-        loadComponent: () =>
-          import('./students/studentsForm/students').then(m => m.StudentsForm),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./students/studentsList/students').then(m => m.StudentsList),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./students/studentsForm/students').then(m => m.StudentsForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./students/studentsForm/students').then(m => m.StudentsForm),
+          },
+        ]
       },
       {
         path: 'activities',
@@ -37,18 +39,20 @@ export const STAFF_ROUTES: Routes = [
       },
       {
         path: 'presence',
-        loadComponent: () =>
-          import('./presence/presenceList/presence').then(m => m.Presence),
-      },
-      {
-        path: 'presence/create',
-        loadComponent: () =>
-          import('./presence/presence-form/presence-form').then(m => m.PresenceForm),
-      },
-      {
-        path: 'presence/edit/:id',
-        loadComponent: () =>
-          import('./presence/presence-form/presence-form').then(m => m.PresenceForm),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./presence/presenceList/presence').then(m => m.Presence),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./presence/presence-form/presence-form').then(m => m.PresenceForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./presence/presence-form/presence-form').then(m => m.PresenceForm),
+          },
+        ]
       },
     ]
   },

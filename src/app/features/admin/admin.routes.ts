@@ -17,63 +17,71 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'roles',
-        loadComponent: () =>
-          import('./role/rolesList/roles').then(m => m.RolesList),
-      },
-      {
-        path: 'roles/create',
-        loadComponent: () =>
-          import('./role/rolesForm/roles').then(m => m.RolesForm),
-      },
-      {
-        path: 'roles/edit/:id',
-        loadComponent: () =>
-          import('./role/rolesForm/roles').then(m => m.RolesForm),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./role/rolesList/roles').then(m => m.RolesList),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./role/rolesForm/roles').then(m => m.RolesForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./role/rolesForm/roles').then(m => m.RolesForm),
+          },
+        ]
       },
       {
         path: 'departments',
-        loadComponent: () =>
-          import('./departments/departmentsList/departments').then(m => m.DepartmentsList),
-      },
-      {
-        path: 'departments/create',
-        loadComponent: () =>
-          import('./departments/departmentsForm/departments').then(m => m.DepartmentsForm),
-      },
-      {
-        path: 'departments/edit/:id',
-        loadComponent: () =>
-          import('./departments/departmentsForm/departments').then(m => m.DepartmentsForm),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./departments/departmentsList/departments').then(m => m.DepartmentsList),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./departments/departmentsForm/departments').then(m => m.DepartmentsForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./departments/departmentsForm/departments').then(m => m.DepartmentsForm),
+          },
+        ]
       },
       {
         path: 'staff',
-        loadComponent: () =>
-          import('./staff/staffList/staff').then(m => m.StaffList),
-      },
-      {
-        path: 'staff/create',
-        loadComponent: () =>
-          import('./staff/staffForm/staff').then(m => m.StaffForm),
-      },
-      {
-        path: 'staff/edit/:id',
-        loadComponent: () =>
-          import('./staff/staffForm/staff').then(m => m.StaffForm),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./staff/staffList/staff').then(m => m.StaffList),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./staff/staffForm/staff').then(m => m.StaffForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./staff/staffForm/staff').then(m => m.StaffForm),
+          },
+        ]
       },
       {
         path: 'students',
-        loadComponent: () =>
-          import('../staff/students/studentsList/students').then(m => m.StudentsList),
-      },
-      {
-        path: 'students/create',
-        loadComponent: () =>
-          import('../staff/students/studentsForm/students').then(m => m.StudentsForm),
-      },
-      {
-        path: 'students/edit/:id',
-        loadComponent: () =>
-          import('../staff/students/studentsForm/students').then(m => m.StudentsForm),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('../staff/students/studentsList/students').then(m => m.StudentsList),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('../staff/students/studentsForm/students').then(m => m.StudentsForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('../staff/students/studentsForm/students').then(m => m.StudentsForm),
+          },
+        ]
       },
       {
         path: 'activities',
@@ -82,8 +90,20 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'presence',
-        loadComponent: () =>
-          import('../staff/presence/presenceList/presence').then(m => m.Presence),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('../staff/presence/presenceList/presence').then(m => m.Presence),
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('../staff/presence/presence-form/presence-form').then(m => m.PresenceForm),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('../staff/presence/presence-form/presence-form').then(m => m.PresenceForm),
+          },
+        ]
       },
     ]
   },

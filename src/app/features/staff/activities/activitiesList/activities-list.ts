@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, ActivatedRoute } from '@angular/router';
 import { ActivitiesService } from '../../../../core/services/api/activities.service';
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
 import { Activity } from '../models/activity.model';
@@ -17,6 +17,7 @@ export class ActivitiesList implements OnInit {
   private activitiesService = inject(ActivitiesService);
   private departmentsService = inject(DepartmentsService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   Math = Math;
 
@@ -118,6 +119,6 @@ export class ActivitiesList implements OnInit {
     });
   }
 
-  viewDetails(id: number): void { this.router.navigate(['/staff/activities', id]); }
-  editActivity(id: number): void { this.router.navigate(['/staff/activities', id, 'edit']); }
+  viewDetails(id: number): void { this.router.navigate([id], { relativeTo: this.route }); }
+  editActivity(id: number): void { this.router.navigate([id, 'edit'], { relativeTo: this.route }); }
 }
