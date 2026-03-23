@@ -38,7 +38,17 @@ export const STAFF_ROUTES: Routes = [
       {
         path: 'presence',
         loadComponent: () =>
-          import('./presence/presence').then(m => m.Presence),
+          import('./presence/presenceList/presence').then(m => m.Presence),
+      },
+      {
+        path: 'presence/create',
+        loadComponent: () =>
+          import('./presence/presence-form/presence-form').then(m => m.PresenceForm),
+      },
+      {
+        path: 'presence/edit/:id',
+        loadComponent: () =>
+          import('./presence/presence-form/presence-form').then(m => m.PresenceForm),
       },
     ]
   },

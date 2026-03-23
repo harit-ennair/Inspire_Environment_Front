@@ -31,28 +31,24 @@
   <div class="stats-section">
     <div class="stats-grid">
       <div class="stat-card">
-        <!-- <span class="stat-icon">📋</span> -->
         <div class="stat-info">
           <span class="stat-label">Total Records</span>
           <span class="stat-value">{{ presences().length }}</span>
         </div>
       </div>
       <div class="stat-card">
-        <!-- <span class="stat-icon text-success">✅</span> -->
         <div class="stat-info">
           <span class="stat-label">Present</span>
           <span class="stat-value">{{ totalPresent }}</span>
         </div>
       </div>
       <div class="stat-card">
-        <!-- <span class="stat-icon text-danger">❌</span> -->
         <div class="stat-info">
           <span class="stat-label">Absent</span>
           <span class="stat-value">{{ totalAbsent }}</span>
         </div>
       </div>
       <div class="stat-card card-highlight">
-        <!-- <span class="stat-icon text-warning">🟡</span> -->
         <div class="stat-info">
           <span class="stat-label">Currently Active</span>
           <span class="stat-value">{{ totalActive }}</span>
@@ -160,6 +156,14 @@
       <h4 class="heading-label">Registrations</h4>
       <h2 class="heading-title">Attendance Records</h2>
     </div>
+    <div class="header-actions">
+      <button class="pill-button-sm pill-primary-sm" routerLink="/staff/presence/create">
+        <span>New Presence</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14m-7-7h14" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
   </div>
 
   <div class="table-container">
@@ -171,12 +175,12 @@
           <th>Status</th>
           <th>Check-In</th>
           <th>Check-Out</th>
-          <th>Status</th>
+          <th>Activity</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        @for (p of filteredPresences(); track p.id) {
+        @for (p of paginatedPresences(); track p.id) {
         <tr [class.row-active]="isActive(p)">
           <td class="col-id">#{{ p.id }}</td>
           <td class="col-student">
@@ -203,7 +207,7 @@
           </td>
           <td class="col-actions">
             <div class="action-group">
-              <button class="action-btn edit" (click)="openEditModal(p)" title="Edit">
+              <button class="action-btn edit" (click)="openEditForm(p.id)" title="Edit">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                   <path
                     d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
@@ -224,45 +228,41 @@
       </tbody>
     </table>
   </div>
-  }
-  }
 
-  <!-- Edit Modal -->
-  @if (editingPresence()) {
-  <div class="modal-overlay" (click)="closeEditModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>Edit Presence Record</h2>
-        <button class="modal-close" (click)="closeEditModal()">✕</button>
+  <!-- Pagination -->
+  @if (totalPages() > 1) {
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Showing {{ paginatedPresences().length }} of {{ filteredPresences().length }} records
+        <span class="page-current-info">(Page {{ currentPage() }} of {{ totalPages() }})</span>
       </div>
-      <div class="modal-body">
-        <div class="form-grid">
-          <div class="form-group full-width">
-            <label>Status</label>
-            <select class="form-select" [(ngModel)]="editForm.status">
-              @for (s of STATUS_OPTIONS; track s) {
-              <option [value]="s">{{ s }}</option>
-              }
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Check-In Time</label>
-            <input type="datetime-local" class="form-input" [(ngModel)]="editForm.checkInTime" />
-          </div>
-          <div class="form-group">
-            <label>Check-Out Time</label>
-            <input type="datetime-local" class="form-input" [(ngModel)]="editForm.checkOutTime" />
-          </div>
+      
+      <div class="pagination-controls">
+        <button class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Prev
+        </button>
+        
+        <div class="page-numbers">
+          @for (p of pageNumbers(); track p) {
+            <button class="page-num" [class.active]="p === currentPage()" (click)="goToPage(p)">
+              {{ p }}
+            </button>
+          }
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="pill-button-sm pill-outline-sm" (click)="closeEditModal()">Cancel</button>
-        <button class="pill-button-sm pill-primary-sm" (click)="saveEdit()" [disabled]="editSaving()">
-          {{ editSaving() ? 'Saving…' : 'Save Changes' }}
+
+        <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="nextPage()">
+          Next
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
         </button>
       </div>
     </div>
-  </div>
+  }
+  }
   }
 
 </div>

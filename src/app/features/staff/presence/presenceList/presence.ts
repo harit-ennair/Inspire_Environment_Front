@@ -1,11 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { PresenceService } from '../../../core/services/api/presence.service';
-import { DepartmentsService } from '../../../core/services/api/departments.service';
-import { StudentsService } from '../../../core/services/api/students.service';
+import { PresenceService } from '../../../../core/services/api/presence.service';
+import { DepartmentsService } from '../../../../core/services/api/departments.service';
+import { StudentsService } from '../../../../core/services/api/students.service';
 
 @Component({
   selector: 'app-presence',
@@ -19,6 +19,7 @@ export class Presence implements OnInit {
   private presenceService  = inject(PresenceService);
   private departmentsService = inject(DepartmentsService);
   private studentsService   = inject(StudentsService);
+  private router            = inject(Router);
 
   presences         = signal<any[]>([]);
   filteredPresences = signal<any[]>([]);
@@ -30,10 +31,10 @@ export class Presence implements OnInit {
   error             = signal<string | null>(null);
   deleteSuccess     = signal<string | null>(null);
   updateSuccess     = signal<string | null>(null);
-  editingPresence   = signal<any | null>(null);
-  editSaving        = signal<boolean>(false);
-
-  editForm = { status: '', checkInTime: '', checkOutTime: '' };
+  
+  // Pagination
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
 
   // Filters
   departmentFilter = '';
@@ -43,6 +44,23 @@ export class Presence implements OnInit {
   dateFilter       = '';   // single day  (nhar)
   statusFilter     = '';
   activeOnly       = false;
+
+  // Computed Pagination
+  paginatedPresences = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredPresences().slice(start, end);
+  });
+
+  totalPages = computed(() => {
+    return Math.ceil(this.filteredPresences().length / this.pageSize());
+  });
+
+  pageNumbers = computed(() => {
+    const total = this.totalPages();
+    if (total <= 1) return [];
+    return Array.from({ length: total }, (_, i) => i + 1);
+  });
 
   readonly STATUS_OPTIONS = ['PENDING', 'PRESENT', 'ABSENT', 'LATE', 'EXCUSED'];
 
@@ -163,6 +181,7 @@ export class Presence implements OnInit {
     });
 
     this.filteredPresences.set(result);
+    this.currentPage.set(1); // Reset to first page when filtering
   }
 
   resetFilters(): void {
@@ -176,6 +195,25 @@ export class Presence implements OnInit {
     this.studentSuggestions.set([]);
     this.showSuggestions  = false;
     this.applyFilters();
+  }
+
+  // Pagination Methods
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
   }
 
   loadPresences(): void {
@@ -194,43 +232,10 @@ export class Presence implements OnInit {
     });
   }
 
-  openEditModal(p: any): void {
-    this.editingPresence.set(p);
-    this.editForm = {
-      status:      p.status ?? '',
-      checkInTime:  p.checkInTime  ? p.checkInTime.substring(0, 16)  : '',
-      checkOutTime: p.checkOutTime ? p.checkOutTime.substring(0, 16) : '',
-    };
+  openEditForm(id: number): void {
+    this.router.navigate(['/staff/presence/edit', id]);
   }
 
-  closeEditModal(): void {
-    this.editingPresence.set(null);
-    this.editSaving.set(false);
-  }
-
-  saveEdit(): void {
-    const p = this.editingPresence();
-    if (!p) return;
-    this.editSaving.set(true);
-    const payload: any = { status: this.editForm.status };
-    if (this.editForm.checkInTime)  payload.checkInTime  = this.editForm.checkInTime;
-    if (this.editForm.checkOutTime) payload.checkOutTime = this.editForm.checkOutTime;
-    this.presenceService.updatePresence(p.id, payload).subscribe({
-      next: (updated: any) => {
-        this.presences.update(list =>
-          list.map(item => item.id === p.id ? { ...item, ...updated } : item)
-        );
-        this.applyFilters();
-        this.closeEditModal();
-        this.updateSuccess.set('Presence record updated successfully.');
-        setTimeout(() => this.updateSuccess.set(null), 3000);
-      },
-      error: () => {
-        this.editSaving.set(false);
-        this.error.set('Failed to update presence record.');
-      }
-    });
-  }
 
   deletePresence(id: number): void {
     if (!confirm('Are you sure you want to delete this presence record?')) return;

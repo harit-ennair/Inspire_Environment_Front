@@ -1,0 +1,130 @@
+<div class="page-container">
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <nav class="breadcrumb-nav">
+      <a (click)="router.navigate(['/staff/presence'])" class="breadcrumb-link" style="cursor: pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Back to Presence
+      </a>
+    </nav>
+  </div>
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="heading-style">
+      <h4 class="heading-label">Attendance</h4>
+      <h2 class="heading-title">{{ isEdit() ? 'Edit Presence Record' : 'Create New Presence' }}</h2>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="alerts-container" style="max-width: 900px; margin: 0 auto; padding: 0 80px 1rem;">
+    @if (error()) {
+    <div class="alert alert-error">
+      <span>⚠️ {{ error() }}</span>
+    </div>
+    }
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Processing...</p>
+  </div>
+  }
+
+  <!-- Form -->
+  @if (!loading()) {
+  <div class="form-card">
+    <form (ngSubmit)="save()" #presenceForm="ngForm">
+
+      <!-- Student Search (Only for Create) -->
+      @if (!isEdit()) {
+      <div class="form-group">
+        <label for="studentSearch">Student <span class="required-star">*</span></label>
+        <div class="search-wrapper">
+          <input type="text" id="studentSearch" name="studentSearch" class="form-control"
+            [(ngModel)]="studentSearch" (input)="onStudentSearchInput()" (blur)="showSuggestions = false"
+            (focus)="onStudentSearchInput()" placeholder="Search by name or code..." autocomplete="off" required />
+          @if (studentSearch) {
+          <button type="button" class="search-clear-inline" (mousedown)="$event.preventDefault(); clearStudentSearch()">✕</button>
+          }
+          @if (showSuggestions && studentSuggestions().length > 0) {
+          <ul class="suggestions-list-form">
+            @for (s of studentSuggestions(); track s.id) {
+            <li (mousedown)="$event.preventDefault(); selectStudent(s)">
+              <span class="sug-name">{{ s.user?.firstName || s.firstName }} {{ s.user?.lastName || s.lastName }}</span>
+              @if (s.studentCode) {
+              <span class="sug-code">{{ s.studentCode }}</span>
+              }
+            </li>
+            }
+          </ul>
+          }
+        </div>
+        <input type="hidden" name="studentId" [(ngModel)]="presence().studentId" required />
+        @if (!presence().studentId && studentSearch && !showSuggestions) {
+          <small class="field-error">Please select a student from the suggestions</small>
+        }
+      </div>
+      } @else {
+        <div class="form-group">
+            <label>Student</label>
+            <div class="read-only-info">
+                {{ presence().student?.user?.firstName || presence().student?.firstName }} 
+                {{ presence().student?.user?.lastName || presence().student?.lastName }}
+            </div>
+        </div>
+      }
+
+      <!-- Status -->
+      <div class="form-group">
+        <label for="status">Status <span class="required-star">*</span></label>
+        <select id="status" name="status" class="form-control" [(ngModel)]="presence().status" required #status="ngModel"
+          [class.is-invalid]="status.invalid && (status.dirty || status.touched)">
+          <option value="">Select status</option>
+          @for (opt of STATUS_OPTIONS; track opt) {
+          <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+        @if (status.invalid && (status.dirty || status.touched)) {
+        <small class="field-error">Status is required</small>
+        }
+      </div>
+
+      <div class="form-row">
+        <!-- Check-In Time -->
+        <div class="form-group">
+          <label for="checkInTime">Check-In Time <span class="required-star">*</span></label>
+          <input type="datetime-local" id="checkInTime" name="checkInTime" class="form-control"
+            [(ngModel)]="presence().checkInTime" required #checkInTime="ngModel"
+            [class.is-invalid]="checkInTime.invalid && (checkInTime.dirty || checkInTime.touched)" />
+          @if (checkInTime.invalid && (checkInTime.dirty || checkInTime.touched)) {
+          <small class="field-error">Check-in time is required</small>
+          }
+        </div>
+
+        <!-- Check-Out Time -->
+        <div class="form-group">
+          <label for="checkOutTime">Check-Out Time</label>
+          <input type="datetime-local" id="checkOutTime" name="checkOutTime" class="form-control"
+            [(ngModel)]="presence().checkOutTime" />
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="pill-button-sm pill-outline-sm" (click)="router.navigate(['/staff/presence'])">
+          Cancel
+        </button>
+        <button type="submit" class="pill-button-sm pill-primary-sm" [disabled]="!presenceForm.form.valid">
+          {{ isEdit() ? 'Update Record' : 'Create Record' }}
+        </button>
+      </div>
+    </form>
+  </div>
+  }
+</div>
