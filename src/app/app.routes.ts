@@ -22,17 +22,17 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./features/dashboard/dashboard').then(m => m.Dashboard),
+          import('./features/sharedComponents/dashboard/dashboard').then(m => m.Dashboard),
       },
       {
         path: 'profile',
         loadComponent: () =>
-          import('./features/profile/profile/profile').then(m => m.Profile),
+          import('./features/sharedComponents/profile/profile/profile').then(m => m.Profile),
       },
       {
         path: 'profile/edit',
         loadComponent: () =>
-          import('./features/profile/profile-form/profile-form').then(m => m.ProfileForm),
+          import('./features/sharedComponents/profile/profile-form/profile-form').then(m => m.ProfileForm),
       }
     ]
   },
@@ -83,10 +83,10 @@ export const routes: Routes = [
   // ==========================================
   {
     path: '403',
-    loadComponent: () => import('./features/page-error403/page-error403').then(m => m.PageError403)
+    loadComponent: () => import('./features/errors/page-error403/page-error403').then(m => m.PageError403)
   },
   {
     path: '**',
-    loadComponent: () => import('./features/page-error404/page-error404').then(m => m.PageError404)
+    loadComponent: () => import('./features/errors/page-error404/page-error404').then(m => m.PageError404)
   }
 ];

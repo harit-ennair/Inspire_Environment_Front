@@ -1,9 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services/api/auth.service';
-import { StaffService } from '../../../core/services/api/staff.service';
-import { StudentsService } from '../../../core/services/api/students.service';
+import { AuthService } from '../../../../core/services/api/auth.service';
+import { StaffService } from '../../../../core/services/api/staff.service';
+import { StudentsService } from '../../../../core/services/api/students.service';
 
 @Component({
   selector: 'app-profile',

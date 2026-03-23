@@ -1,11 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { StudentsService } from '../../core/services/api/students.service';
-import { StaffService } from '../../core/services/api/staff.service';
-import { ActivitiesService } from '../../core/services/api/activities.service';
-import { DepartmentsService } from '../../core/services/api/departments.service';
-import { AuthService } from '../../core/services/api/auth.service';
+import { StudentsService } from '../../../core/services/api/students.service';
+import { StaffService } from '../../../core/services/api/staff.service';
+import { ActivitiesService } from '../../../core/services/api/activities.service';
+import { DepartmentsService } from '../../../core/services/api/departments.service';
+import { AuthService } from '../../../core/services/api/auth.service';
 
 @Component({
   selector: 'app-dashboard',

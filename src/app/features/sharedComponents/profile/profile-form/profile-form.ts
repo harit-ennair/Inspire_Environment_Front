@@ -2,9 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../../core/services/api/auth.service';
-import { StaffService } from '../../../core/services/api/staff.service';
-import { StudentsService } from '../../../core/services/api/students.service';
+import { AuthService } from '../../../../core/services/api/auth.service';
+import { StaffService } from '../../../../core/services/api/staff.service';
+import { StudentsService } from '../../../../core/services/api/students.service';
 
 @Component({
   selector: 'app-profile-form',

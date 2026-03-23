@@ -33,12 +33,12 @@ export const STUDENT_ROUTES: Routes = [
       {
         path: 'profile',
         loadComponent: () =>
-          import('../profile/profile/profile').then(m => m.Profile),
+          import('../sharedComponents/profile/profile/profile').then(m => m.Profile),
       },
       {
         path: 'profile/edit',
         loadComponent: () =>
-          import('../profile/profile-form/profile-form').then(m => m.ProfileForm),
+          import('../sharedComponents/profile/profile-form/profile-form').then(m => m.ProfileForm),
       },
     ]
   },
