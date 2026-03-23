@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/guards/auth.guard';
 import { roleGuard } from '../../core/guards/role.guard';
 import { NavbarComponent } from '../layout/navbar/navbar';
 
@@ -6,8 +7,8 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: NavbarComponent,
-    canActivate: [roleGuard],
-    data: { role: 'admin' },
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] },
     children: [
       {
         path: '',

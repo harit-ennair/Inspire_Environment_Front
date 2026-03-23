@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { NavbarComponent } from './features/layout/navbar/navbar';
 import { roleGuard } from './core/guards/role.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   // ==========================================
@@ -15,7 +16,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: NavbarComponent,
-    canActivate: [roleGuard],
+    canActivate: [authGuard, roleGuard],
     data: { roles: ['staff','admin'] },
     children: [
       {
@@ -49,7 +50,7 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'admin',
-    canActivate: [roleGuard],
+    canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] },
     loadChildren: () =>
       import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
@@ -60,7 +61,7 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'staff',
-    canActivate: [roleGuard],
+    canActivate: [authGuard, roleGuard],
     data: { roles: ['staff','admin'] },
     loadChildren: () =>
       import('./features/staff/staff.routes').then(m => m.STAFF_ROUTES)
@@ -71,7 +72,7 @@ export const routes: Routes = [
   // ==========================================
   {
     path: 'student',
-    canActivate: [roleGuard],
+    canActivate: [authGuard, roleGuard],
     data: { roles: ['student','staff','admin'] },
     loadChildren: () =>
       import('./features/student/student.routes').then(m => m.STUDENT_ROUTES)

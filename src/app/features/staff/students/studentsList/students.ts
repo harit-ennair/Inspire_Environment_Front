@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { StudentsService } from '../../../../core/services/api/students.service';
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
@@ -7,7 +8,7 @@ import { DepartmentsService } from '../../../../core/services/api/departments.se
 @Component({
   selector: 'app-students',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './students.html',
   styleUrls: ['./students.css'],
 })
@@ -23,6 +24,62 @@ export class StudentsList implements OnInit {
   departments = signal<any[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+
+  // Search & Pagination Signals
+  searchTerm = signal<string>('');
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(8);
+
+  // Computed Values
+  filteredStudents = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.students();
+
+    return this.students().filter(student =>
+      (student.firstName + ' ' + student.lastName).toLowerCase().includes(term) ||
+      (student.email?.toLowerCase().includes(term)) ||
+      (student.studentCode?.toLowerCase().includes(term))
+    );
+  });
+
+  paginatedStudents = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredStudents().slice(start, end);
+  });
+
+  totalPages = computed(() => {
+    return Math.ceil(this.filteredStudents().length / this.pageSize());
+  });
+
+  pageNumbers = computed(() => {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
+  });
+
+  // Pagination Methods
+  nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+    this.currentPage.set(1); // Reset to first page on search
+  }
 
   ngOnInit(): void {
     this.loadDepartments();

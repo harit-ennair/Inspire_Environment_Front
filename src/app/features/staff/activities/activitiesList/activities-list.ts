@@ -18,8 +18,9 @@ export class ActivitiesList implements OnInit {
   private departmentsService = inject(DepartmentsService);
   private router = inject(Router);
 
+  Math = Math;
+
   activities = signal<Activity[]>([]);
-  allActivities = signal<Activity[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
   searchTerm = signal<string>('');
@@ -27,9 +28,14 @@ export class ActivitiesList implements OnInit {
   departments = signal<any[]>([]);
   selectedDepartmentId = signal<number | null>(null);
 
+  currentPage = signal<number>(0);
+  pageSize = signal<number>(9);
+  totalElements = signal<number>(0);
+  totalPages = signal<number>(0);
+
   ngOnInit(): void {
-    this.loadActivities();
     this.loadDepartments();
+    this.loadActivities();
   }
 
   loadDepartments(): void {
@@ -39,39 +45,13 @@ export class ActivitiesList implements OnInit {
     });
   }
 
-  onDepartmentFilter(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    const id = value ? +value : null;
-    this.selectedDepartmentId.set(id);
-    this.searchTerm.set('');
-    if (!id) {
-      this.loadActivities();
-      return;
-    }
-    this.loading.set(true);
-    this.error.set(null);
-    this.activitiesService.getActivitiesByDepartment(id).subscribe({
-      next: (data: Activity[]) => {
-        const sorted = data.sort((a, b) => (b.startDate ?? '').localeCompare(a.startDate ?? ''));
-        this.allActivities.set(sorted);
-        this.activities.set(sorted);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to filter by department.');
-        this.loading.set(false);
-      }
-    });
-  }
-
   loadActivities(): void {
     this.loading.set(true);
-    this.error.set(null);
-    this.activitiesService.getAllActivities().subscribe({
-      next: (data: Activity[]) => {
-        const sorted = data.sort((a, b) => (b.startDate ?? '').localeCompare(a.startDate ?? ''));
-        this.allActivities.set(sorted);
-        this.activities.set(sorted);
+    this.activitiesService.searchActivities(this.searchTerm(), this.currentPage(), this.pageSize()).subscribe({
+      next: (page: any) => {
+        this.activities.set(page.content || []);
+        this.totalElements.set(page.totalElements || 0);
+        this.totalPages.set(page.totalPages || 0);
         this.loading.set(false);
       },
       error: () => {
@@ -82,48 +62,62 @@ export class ActivitiesList implements OnInit {
   }
 
   onSearch(): void {
-    const term = this.searchTerm().toLowerCase().trim();
-    if (!term) {
-      this.activities.set(this.allActivities());
-      return;
-    }
-    const filtered = this.allActivities().filter(a =>
-      a.title?.toLowerCase().includes(term)
-    );
-    this.activities.set(filtered);
+    this.currentPage.set(0);
+    this.loadActivities();
   }
 
-  clearSearch(): void {
+  onDepartmentFilter(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    const id = value ? +value : null;
+    this.selectedDepartmentId.set(id);
     this.searchTerm.set('');
-    this.activities.set(this.allActivities());
-  }
-
-  confirmDelete(id: number): void {
-    this.deleteConfirmId.set(id);
-  }
-
-  cancelDelete(): void {
-    this.deleteConfirmId.set(null);
-  }
-
-  deleteActivity(id: number): void {
-    this.activitiesService.deleteActivity(id).subscribe({
-      next: () => {
-        this.activities.update(list => list.filter(a => a.id !== id));
-        this.deleteConfirmId.set(null);
+    this.currentPage.set(0);
+    if (!id) { this.loadActivities(); return; }
+    this.loading.set(true);
+    this.activitiesService.getActivitiesByDepartment(id).subscribe({
+      next: (data: Activity[]) => {
+        this.activities.set(data);
+        this.totalPages.set(1);
+        this.totalElements.set(data.length);
+        this.loading.set(false);
       },
       error: () => {
-        this.error.set('Failed to delete activity.');
-        this.deleteConfirmId.set(null);
+        this.error.set('Failed to filter by department.');
+        this.loading.set(false);
       }
     });
   }
 
-  viewDetails(id: number): void {
-    this.router.navigate(['/staff/activities', id]);
+  goToPage(page: number): void {
+    if (page >= 0 && page < this.totalPages()) {
+      this.currentPage.set(page);
+      this.loadActivities();
+    }
   }
 
-  editActivity(id: number): void {
-    this.router.navigate(['/staff/activities', id, 'edit']);
+  nextPage(): void { this.goToPage(this.currentPage() + 1); }
+  previousPage(): void { this.goToPage(this.currentPage() - 1); }
+
+  getPageNumbers(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages: number[] = [];
+    const start = Math.max(0, current - 2);
+    const end = Math.min(total - 1, current + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
+
+  confirmDelete(id: number): void { this.deleteConfirmId.set(id); }
+  cancelDelete(): void { this.deleteConfirmId.set(null); }
+
+  deleteActivity(id: number): void {
+    this.activitiesService.deleteActivity(id).subscribe({
+      next: () => { this.deleteConfirmId.set(null); this.loadActivities(); },
+      error: () => { this.error.set('Failed to delete activity.'); this.deleteConfirmId.set(null); }
+    });
+  }
+
+  viewDetails(id: number): void { this.router.navigate(['/staff/activities', id]); }
+  editActivity(id: number): void { this.router.navigate(['/staff/activities', id, 'edit']); }
 }

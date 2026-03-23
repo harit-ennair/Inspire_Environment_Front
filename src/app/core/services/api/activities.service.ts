@@ -16,6 +16,12 @@ export class ActivitiesService {
     return this.http.get(this.activitiesApi);
   }
 
+  searchActivities(search: string = '', page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get(`${this.activitiesApi}/search`, {
+      params: { search, page: page.toString(), size: size.toString() }
+    });
+  }
+
   getActivityById(id: number): Observable<any> {
     return this.http.get(`${this.activitiesApi}/${id}`);
   }
