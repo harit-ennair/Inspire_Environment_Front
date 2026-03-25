@@ -3,6 +3,15 @@ import { CommonModule } from '@angular/common';
 import { PresenceService } from '../../../core/services/api/presence.service';
 import { AuthService } from '../../../core/services/api/auth.service';
 
+type PresenceStatus = 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED' | 'PENDING';
+
+interface PresenceRecord {
+  id: number;
+  status: PresenceStatus;
+  checkInTime?: string;
+  checkOutTime?: string;
+}
+
 @Component({
   selector: 'app-presence',
   standalone: true,
@@ -14,12 +23,18 @@ export class Presence implements OnInit {
   private presenceService = inject(PresenceService);
   private authService = inject(AuthService);
 
-  presences = signal<any[]>([]);
-  loading = signal<boolean>(false);
+  presences = signal<PresenceRecord[]>([]);
+  loading = signal(false);
   error = signal<string | null>(null);
   filterStatus = signal<string>('ALL');
 
-  readonly STATUS_FILTERS = ['ALL', 'PRESENT', 'ABSENT', 'LATE', 'EXCUSED', 'PENDING'];
+  readonly STATUS_FILTERS: Array<'ALL' | PresenceStatus> = [
+    'ALL',
+    'PRESENT',
+    'ABSENT',
+    'LATE',
+    'PENDING',
+  ];
 
   // Stats
   totalPresent = computed(() => this.presences().filter(p => p.status === 'PRESENT').length);
@@ -36,12 +51,9 @@ export class Presence implements OnInit {
   filteredPresences = computed(() => {
     const status = this.filterStatus();
     const list = this.presences();
-    const filtered = status === 'ALL' ? list : list.filter(p => p.status === status);
-    return filtered.sort((a: any, b: any) => {
-      const dateA = a.checkInTime ? new Date(a.checkInTime).getTime() : 0;
-      const dateB = b.checkInTime ? new Date(b.checkInTime).getTime() : 0;
-      return dateB - dateA;
-    });
+    const filtered = status === 'ALL' ? list : list.filter((p) => p.status === status);
+
+    return [...filtered].sort((a, b) => this.toTimestamp(b.checkInTime) - this.toTimestamp(a.checkInTime));
   });
 
   ngOnInit(): void {
@@ -59,8 +71,8 @@ export class Presence implements OnInit {
     this.error.set(null);
 
     this.presenceService.getPresencesByStudent(Number(userId)).subscribe({
-      next: (data: any[]) => {
-        this.presences.set(data);
+      next: (data: PresenceRecord[]) => {
+        this.presences.set(data ?? []);
         this.loading.set(false);
       },
       error: () => {
@@ -75,8 +87,10 @@ export class Presence implements OnInit {
   }
 
   formatDateTime(dateStr?: string): string {
-    if (!dateStr) return '—';
+    if (!dateStr) return '-';
     const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return '-';
+
     return d.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
@@ -88,14 +102,18 @@ export class Presence implements OnInit {
   }
 
   formatTime(dateStr?: string): string {
-    if (!dateStr) return '—';
+    if (!dateStr) return '-';
     const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return '-';
+
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
+    if (!dateStr) return '-';
     const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return '-';
+
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   }
 
@@ -104,20 +122,14 @@ export class Presence implements OnInit {
       PRESENT: 'status-present',
       ABSENT: 'status-absent',
       LATE: 'status-late',
-      EXCUSED: 'status-excused',
       PENDING: 'status-pending',
     };
     return map[status] ?? 'status-default';
   }
 
-  getStatusIcon(status: string): string {
-    switch (status) {
-      case 'PRESENT': return '✓';
-      case 'ABSENT': return '✗';
-      case 'LATE': return '⏱';
-      case 'EXCUSED': return '✎';
-      case 'PENDING': return '⏳';
-      default: return '—';
-    }
+  private toTimestamp(dateStr?: string): number {
+    if (!dateStr) return 0;
+    const time = new Date(dateStr).getTime();
+    return Number.isNaN(time) ? 0 : time;
   }
 }

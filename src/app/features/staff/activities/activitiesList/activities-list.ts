@@ -6,6 +6,12 @@ import { ActivitiesService } from '../../../../core/services/api/activities.serv
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
 import { Activity } from '../models/activity.model';
 
+type ActivityPage = {
+  content?: Activity[];
+  totalElements?: number;
+  totalPages?: number;
+};
+
 @Component({
   selector: 'app-activities-list',
   standalone: true,
@@ -47,18 +53,10 @@ export class ActivitiesList implements OnInit {
   }
 
   loadActivities(): void {
-    this.loading.set(true);
+    this.startLoading();
     this.activitiesService.searchActivities(this.searchTerm(), this.currentPage(), this.pageSize()).subscribe({
-      next: (page: any) => {
-        this.activities.set(page.content || []);
-        this.totalElements.set(page.totalElements || 0);
-        this.totalPages.set(page.totalPages || 0);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to load activities.');
-        this.loading.set(false);
-      }
+      next: (page: ActivityPage) => this.applyPage(page),
+      error: () => this.handleError('Failed to load activities.')
     });
   }
 
@@ -70,22 +68,20 @@ export class ActivitiesList implements OnInit {
   onDepartmentFilter(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     const id = value ? +value : null;
+
     this.selectedDepartmentId.set(id);
     this.searchTerm.set('');
     this.currentPage.set(0);
-    if (!id) { this.loadActivities(); return; }
-    this.loading.set(true);
+
+    if (!id) {
+      this.loadActivities();
+      return;
+    }
+
+    this.startLoading();
     this.activitiesService.getActivitiesByDepartment(id).subscribe({
-      next: (data: Activity[]) => {
-        this.activities.set(data);
-        this.totalPages.set(1);
-        this.totalElements.set(data.length);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to filter by department.');
-        this.loading.set(false);
-      }
+      next: (data: Activity[]) => this.applyList(data),
+      error: () => this.handleError('Failed to filter by department.')
     });
   }
 
@@ -121,4 +117,28 @@ export class ActivitiesList implements OnInit {
 
   viewDetails(id: number): void { this.router.navigate([id], { relativeTo: this.route }); }
   editActivity(id: number): void { this.router.navigate([id, 'edit'], { relativeTo: this.route }); }
+
+  private startLoading(): void {
+    this.error.set(null);
+    this.loading.set(true);
+  }
+
+  private applyPage(page: ActivityPage): void {
+    this.activities.set(page.content ?? []);
+    this.totalElements.set(page.totalElements ?? 0);
+    this.totalPages.set(page.totalPages ?? 0);
+    this.loading.set(false);
+  }
+
+  private applyList(data: Activity[]): void {
+    this.activities.set(data);
+    this.totalPages.set(1);
+    this.totalElements.set(data.length);
+    this.loading.set(false);
+  }
+
+  private handleError(message: string): void {
+    this.error.set(message);
+    this.loading.set(false);
+  }
 }

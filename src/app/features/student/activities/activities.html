@@ -45,7 +45,6 @@
 
                     <!-- Presence Status Badge -->
                     <div class="presence-indicator" [ngClass]="getPresenceClass(activity.presenceStatus)">
-                        <span class="presence-icon">{{ getPresenceIcon(activity.presenceStatus) }}</span>
                         <span class="presence-label">{{ activity.presenceStatus || 'No record' }}</span>
                     </div>
 

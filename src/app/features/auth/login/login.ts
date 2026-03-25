@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -12,22 +12,16 @@ import { AuthService } from '../../../core/services/api/auth.service';
   styleUrl: './login.css',
 })
 export class Login {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   email = '';
   password = '';
   showPassword = false;
   isLoading = false;
-  errorMessage = '';
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
-    // Check if sessionStorage is available
-    if (!this.authService.isStorageAvailable()) {
-      console.error('SessionStorage is not available! Session data cannot be stored.');
-      this.errorMessage = 'Browser storage is not available. Please enable cookies and try again.';
-    }
-  }
+  errorMessage = this.authService.isStorageAvailable()
+    ? ''
+    : 'Browser storage is not available. Please enable cookies and try again.';
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -39,97 +33,75 @@ export class Login {
       return;
     }
 
+    if (!this.authService.isStorageAvailable()) {
+      this.errorMessage = 'Browser storage is not available. Please enable cookies and try again.';
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 
     const loginData = { email: this.email, password: this.password };
-    console.log('Sending login data:', loginData);
 
     this.authService.login(loginData).subscribe({
       next: (response: any) => {
         this.isLoading = false;
-        console.log('Login response:', response);
-        
-        // Store tokens
-        if (response.accessToken) {
-          sessionStorage.setItem('token', response.accessToken);
-          console.log('Access token stored successfully');
-        } else {
-          console.error('No access token received from server');
+
+        if (!response?.accessToken) {
           this.errorMessage = 'Authentication failed: No token received';
           return;
         }
-        
-        if (response.refreshToken) {
-          sessionStorage.setItem('refreshToken', response.refreshToken);
-        }
-        
-        // Store user info
-        if (response.userId) {
-          sessionStorage.setItem('userId', response.userId.toString());
-        }
-        if (response.email) {
-          sessionStorage.setItem('email', response.email);
-        }
-        if (response.firstName && response.lastName) {
-          sessionStorage.setItem('firstName', response.firstName);
-          sessionStorage.setItem('lastName', response.lastName);
-          sessionStorage.setItem('userName', `${response.firstName} ${response.lastName}`);
-          console.log('User name stored:', `${response.firstName} ${response.lastName}`);
-        }
-        
-        // Debug: Log all stored session data
-        console.log('Session storage contents:', {
-          token: sessionStorage.getItem('token') ? 'present' : 'missing',
-          refreshToken: sessionStorage.getItem('refreshToken') ? 'present' : 'missing',
-          userId: sessionStorage.getItem('userId'),
-          email: sessionStorage.getItem('email'),
-          userName: sessionStorage.getItem('userName'),
-          role: sessionStorage.getItem('role')
-        });
-        
-        // Verify data was actually stored
-        const storedToken = sessionStorage.getItem('token');
-        if (!storedToken) {
-          console.error('CRITICAL: Token was not stored in sessionStorage!');
+
+        this.storeSessionData(response);
+
+        if (!sessionStorage.getItem('token')) {
           this.errorMessage = 'Failed to save authentication data. Please try again.';
           return;
         }
-        
-        // Store role and navigate
-        if (response.role) {
-          sessionStorage.setItem('role', response.role);
-          console.log('Role stored:', response.role);
-          
-          switch (response.role) {
-            case 'ADMIN':
-              this.router.navigate(['/admin']);
-              break;
-            case 'STAFF':
-              this.router.navigate(['/staff']);
-              break;
-            case 'STUDENT':
-              this.router.navigate(['/student']);
-              break;
-            default:
-              this.router.navigate(['/']);
-          }
-        } else {
-          console.error('No role received from server');
-          this.router.navigate(['/']);
-        }
+
+        this.navigateByRole(response?.role);
       },
       error: (err: any) => {
         this.isLoading = false;
-        console.error('Login error details:', {
-          status: err.status,
-          statusText: err.statusText,
-          error: err.error,
-          message: err.message,
-          url: err.url
-        });
         this.errorMessage = err.error?.message || err.error?.error || 'Invalid credentials. Please try again.';
       }
     });
+  }
+
+  private storeSessionData(response: any): void {
+    this.setSessionItem('token', response?.accessToken);
+    this.setSessionItem('refreshToken', response?.refreshToken);
+    this.setSessionItem('role', response?.role);
+    this.setSessionItem('email', response?.email);
+
+    if (response?.userId !== undefined && response?.userId !== null) {
+      this.setSessionItem('userId', String(response.userId));
+    }
+
+    this.setSessionItem('firstName', response?.firstName);
+    this.setSessionItem('lastName', response?.lastName);
+
+    const userName = [response?.firstName, response?.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+
+    this.setSessionItem('userName', userName || undefined);
+  }
+
+  private setSessionItem(key: string, value?: string): void {
+    if (value) {
+      sessionStorage.setItem(key, value);
+    }
+  }
+
+  private navigateByRole(role?: string): void {
+    const roleRoutes: Record<string, string> = {
+      ADMIN: '/admin',
+      STAFF: '/staff',
+      STUDENT: '/student',
+    };
+
+    this.router.navigate([roleRoutes[role || ''] || '/']);
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { PresenceService } from '../../../../core/services/api/presence.service';
 import { StudentsService } from '../../../../core/services/api/students.service';
 
@@ -14,10 +15,10 @@ import { StudentsService } from '../../../../core/services/api/students.service'
 })
 export class PresenceForm implements OnInit {
 
-  private presenceService = inject(PresenceService);
-  private studentsService = inject(StudentsService);
-  private route = inject(ActivatedRoute);
-  public router = inject(Router);
+  private readonly presenceService = inject(PresenceService);
+  private readonly studentsService = inject(StudentsService);
+  private readonly route = inject(ActivatedRoute);
+  public readonly router = inject(Router);
 
   presence = signal<any>({
     status: '',
@@ -39,17 +40,17 @@ export class PresenceForm implements OnInit {
 
   ngOnInit(): void {
     this.loadStudents();
-    
-    const paramId = this.route.snapshot.paramMap.get('id');
 
+    const paramId = this.route.snapshot.paramMap.get('id');
     if (paramId) {
+      const id = Number(paramId);
       this.isEdit.set(true);
-      this.id.set(Number(paramId));
-      this.loadPresence(Number(paramId));
+      this.id.set(id);
+      this.loadPresence(id);
     }
   }
 
-  loadStudents() {
+  loadStudents(): void {
     this.studentsService.getAllStudents().subscribe({
       next: (data) => {
         this.students.set(data);
@@ -60,27 +61,27 @@ export class PresenceForm implements OnInit {
     });
   }
 
-  loadPresence(id: number) {
+  loadPresence(id: number): void {
     this.loading.set(true);
     this.error.set(null);
+
     this.presenceService.getPresenceById(id).subscribe({
       next: (data) => {
-        this.processPresenceData(data);
+        this.setPresenceFromData(data);
         this.loading.set(false);
       },
       error: (err) => {
         console.warn('getPresenceById failed, trying getAllPresences as fallback', err);
-        // Fallback: load all presences and find the one with matching ID
         this.presenceService.getAllPresences().subscribe({
           next: (list: any[]) => {
-            const found = list.find(p => p.id === id);
+            const found = list.find((p) => p.id === id);
             if (found) {
-              this.processPresenceData(found);
-              this.loading.set(false);
+              this.setPresenceFromData(found);
+              return;
             } else {
               this.error.set('Presence record not found.');
-              this.loading.set(false);
             }
+            this.loading.set(false);
           },
           error: () => {
             this.error.set('Failed to load presence record.');
@@ -91,12 +92,14 @@ export class PresenceForm implements OnInit {
     });
   }
 
-  private processPresenceData(data: any) {
-    // Helper to format time for datetime-local (YYYY-MM-DDTHH:mm)
+  private setPresenceFromData(data: any): void {
     const formatTime = (time: any) => {
-      if (!time) return '';
-      const s = String(time).replace(' ', 'T');
-      return s.length >= 16 ? s.substring(0, 16) : s;
+      if (!time) {
+        return '';
+      }
+
+      const value = String(time).replace(' ', 'T');
+      return value.length >= 16 ? value.substring(0, 16) : value;
     };
 
     const formatted = {
@@ -105,34 +108,37 @@ export class PresenceForm implements OnInit {
       checkOutTime: formatTime(data.checkOutTime),
       studentId: data.studentId ?? data.student?.id
     };
+
     this.presence.set(formatted);
-    
+
     if (data.student) {
-      const s = data.student;
-      const firstName = s.user?.firstName || s.firstName || '';
-      const lastName = s.user?.lastName || s.lastName || '';
-      this.studentSearch = `${firstName} ${lastName}`.trim();
+      this.studentSearch = this.getStudentName(data.student);
     }
+
+    this.loading.set(false);
   }
 
   onStudentSearchInput(): void {
     const q = this.studentSearch.trim().toLowerCase();
+
     if (!q) {
       this.studentSuggestions.set([]);
       this.showSuggestions = false;
       return;
     }
+
     const matches = this.students().filter(s => {
-      const name = `${s.user?.firstName || s.firstName} ${s.user?.lastName || s.lastName}`.toLowerCase();
+      const name = this.getStudentName(s).toLowerCase();
       const code = (s.studentCode || '').toLowerCase();
       return name.includes(q) || code.includes(q);
     });
+
     this.studentSuggestions.set(matches.slice(0, 8));
     this.showSuggestions = true;
   }
 
   selectStudent(student: any): void {
-    this.studentSearch = `${student.user?.firstName || student.firstName} ${student.user?.lastName || student.lastName}`;
+    this.studentSearch = this.getStudentName(student);
     this.presence.update(p => ({ ...p, studentId: student.id }));
     this.showSuggestions = false;
   }
@@ -144,26 +150,24 @@ export class PresenceForm implements OnInit {
     this.showSuggestions = false;
   }
 
-  save() {
+  private getStudentName(student: any): string {
+    const firstName = student?.user?.firstName || student?.firstName || '';
+    const lastName = student?.user?.lastName || student?.lastName || '';
+    return `${firstName} ${lastName}`.trim();
+  }
+
+  save(): void {
     const data = this.presence();
     this.loading.set(true);
 
-    if (this.isEdit()) {
-      this.presenceService.updatePresence(this.id()!, data).subscribe({
+    const request$ = this.isEdit()
+      ? this.presenceService.updatePresence(this.id()!, data)
+      : this.presenceService.createPresence(data);
+
+    request$.pipe(finalize(() => this.loading.set(false))).subscribe({
         next: () => {
           this.router.navigate(['/staff/presence']);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false)
+        }
       });
-    } else {
-      this.presenceService.createPresence(data).subscribe({
-        next: () => {
-          this.router.navigate(['/staff/presence']);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false)
-      });
-    }
   }
 }

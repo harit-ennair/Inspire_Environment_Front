@@ -65,6 +65,58 @@ export class Presence implements OnInit {
 
   readonly STATUS_OPTIONS = ['PENDING', 'PRESENT', 'ABSENT', 'LATE', 'EXCUSED'];
 
+  private toDateOnly(value: string): string {
+    return new Date(value).toDateString();
+  }
+
+  private extractStudentName(student: any): string {
+    return `${student.firstName} ${student.lastName}`.toLowerCase();
+  }
+
+  private refreshStudentOptions(): void {
+    if (!this.departmentFilter) {
+      this.studentOptions.set(this.allStudents());
+      return;
+    }
+
+    this.studentOptions.set(
+      this.allStudents().filter((s) => String(s.departmentId) === this.departmentFilter)
+    );
+  }
+
+  private matchesDepartment(presence: any): boolean {
+    if (!this.departmentFilter) return true;
+
+    const selectedDepartment = this.departments().find(
+      (department: any) => String(department.id) === this.departmentFilter
+    );
+
+    const selectedName = selectedDepartment?.name;
+    const presenceDepartmentName =
+      presence.student?.user?.departmentName ?? presence.departmentName;
+    const presenceDepartmentId =
+      presence.departmentId ??
+      presence.student?.departmentId ??
+      presence.student?.user?.departmentId;
+
+    return (
+      (selectedName && presenceDepartmentName === selectedName) ||
+      String(presenceDepartmentId) === this.departmentFilter
+    );
+  }
+
+  private matchesStudent(presence: any): boolean {
+    if (!this.studentFilter) return true;
+    const studentId = presence.studentId ?? presence.student?.id;
+    return String(studentId) === this.studentFilter;
+  }
+
+  private matchesDate(presence: any): boolean {
+    if (!this.dateFilter) return true;
+    if (!presence.checkInTime) return false;
+    return this.toDateOnly(presence.checkInTime) === this.toDateOnly(this.dateFilter);
+  }
+
   ngOnInit(): void {
     this.loading.set(true);
     forkJoin({
@@ -98,13 +150,7 @@ export class Presence implements OnInit {
     this.studentSearch = '';
     this.studentSuggestions.set([]);
     this.showSuggestions = false;
-    if (this.departmentFilter) {
-      this.studentOptions.set(
-        this.allStudents().filter(s => String(s.departmentId) === this.departmentFilter)
-      );
-    } else {
-      this.studentOptions.set(this.allStudents());
-    }
+    this.refreshStudentOptions();
     this.applyFilters();
   }
 
@@ -117,9 +163,8 @@ export class Presence implements OnInit {
       this.applyFilters();
       return;
     }
-    const matches = this.studentOptions().filter(s =>
-      `${s.firstName} ${s.lastName}`.toLowerCase().includes(q) ||
-      (s.studentCode && s.studentCode.toLowerCase().includes(q))
+    const matches = this.studentOptions().filter(
+      (s) => this.extractStudentName(s).includes(q) || s.studentCode?.toLowerCase().includes(q)
     );
     this.studentSuggestions.set(matches.slice(0, 8));
     this.showSuggestions = true;
@@ -141,41 +186,13 @@ export class Presence implements OnInit {
   }
 
   applyFilters(): void {
-    let result: any[] = this.presences();
-
-    if (this.activeOnly) {
-      result = result.filter(p => p.checkInTime && !p.checkOutTime);
-    }
-
-    if (this.statusFilter) {
-      result = result.filter(p => p.status === this.statusFilter);
-    }
-
-    if (this.departmentFilter) {
-      const dept = this.departments().find((d: any) => String(d.id) === this.departmentFilter);
-      const deptName = dept?.name;
-      result = result.filter(p => {
-        const pDeptName = p.student?.user?.departmentName ?? p.departmentName;
-        const pDeptId   = p.departmentId ?? p.student?.departmentId ?? p.student?.user?.departmentId;
-        return (deptName && pDeptName === deptName) || String(pDeptId) === this.departmentFilter;
-      });
-    }
-
-    if (this.studentFilter) {
-      result = result.filter(p => {
-        const sid = p.studentId ?? p.student?.id;
-        return String(sid) === this.studentFilter;
-      });
-    }
-
-    if (this.dateFilter) {
-      result = result.filter(p => {
-        if (!p.checkInTime) return false;
-        return new Date(p.checkInTime).toDateString() === new Date(this.dateFilter).toDateString();
-      });
-    }
-
-    result = result.sort((a, b) => {
+    const result = this.presences()
+      .filter((p) => !this.activeOnly || this.isActive(p))
+      .filter((p) => !this.statusFilter || p.status === this.statusFilter)
+      .filter((p) => this.matchesDepartment(p))
+      .filter((p) => this.matchesStudent(p))
+      .filter((p) => this.matchesDate(p))
+      .sort((a, b) => {
       const dateA = a.checkInTime ? new Date(a.checkInTime).getTime() : 0;
       const dateB = b.checkInTime ? new Date(b.checkInTime).getTime() : 0;
       return dateB - dateA;
@@ -192,7 +209,7 @@ export class Presence implements OnInit {
     this.dateFilter       = '';
     this.statusFilter     = '';
     this.activeOnly       = false;
-    this.studentOptions.set(this.allStudents());
+    this.refreshStudentOptions();
     this.studentSuggestions.set([]);
     this.showSuggestions  = false;
     this.applyFilters();

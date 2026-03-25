@@ -7,6 +7,19 @@ import { AttendanceService } from '../../../../core/services/api/attendance.serv
 import { ActivitiesService } from '../../../../core/services/api/activities.service';
 import { Activity } from '../models/activity.model';
 
+type AttendanceRecord = {
+  id: number;
+  status: string;
+  checkInTime?: string;
+  student?: {
+    user?: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+    };
+  };
+};
+
 @Component({
   selector: 'app-activities-attendance',
   standalone: true,
@@ -20,7 +33,7 @@ export class ActivitiesAttendance implements OnInit {
   private activitiesService = inject(ActivitiesService);
   private route = inject(ActivatedRoute);
 
-  attendances = signal<any[]>([]);
+  attendances = signal<AttendanceRecord[]>([]);
   activity = signal<Activity | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
@@ -34,6 +47,12 @@ export class ActivitiesAttendance implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!Number.isFinite(id) || id <= 0) {
+      this.loading.set(false);
+      this.error.set('Invalid activity id.');
+      return;
+    }
+
     this.activityId.set(id);
     this.loadAttendances(id);
     this.activitiesService.getActivityById(id).subscribe({
@@ -48,26 +67,16 @@ export class ActivitiesAttendance implements OnInit {
     this.attendanceService.getAttendancesByActivity(activityId).subscribe({
       next: (data) => {
         this.attendances.set(Array.isArray(data) ? data : []);
-        this.loading.set(false);
+        this.finishLoading();
       },
       error: (err: HttpErrorResponse) => {
-        if (err.status === 404) {
-          // No records yet — treat as empty list
-          this.attendances.set([]);
-          this.error.set(null);
-        } else if (err.status === 500) {
-          this.error.set(`Server error (500): ${err.error?.message ?? 'An internal server error occurred. Please check the backend.'}`);
-        } else if (err.status === 0) {
-          this.error.set('Cannot reach the server.');
-        } else {
-          this.error.set(`Error ${err.status}: ${err.error?.message ?? err.message}`);
-        }
-        this.loading.set(false);
+        this.handleAttendancesLoadError(err);
+        this.finishLoading();
       }
     });
   }
 
-  startEditCheckInTime(record: any): void {
+  startEditCheckInTime(record: AttendanceRecord): void {
     const current = record.checkInTime
       ? new Date(record.checkInTime).toISOString().slice(0, 16)
       : '';
@@ -76,8 +85,7 @@ export class ActivitiesAttendance implements OnInit {
   }
 
   cancelEditCheckInTime(): void {
-    this.editingTimeId.set(null);
-    this.checkInTimeValue.set('');
+    this.resetCheckInEditor();
   }
 
   saveCheckInTime(attendanceId: number): void {
@@ -87,9 +95,8 @@ export class ActivitiesAttendance implements OnInit {
     this.attendanceService.setCheckInTime(attendanceId, value).subscribe({
       next: () => {
         this.settingTimeId.set(null);
-        this.editingTimeId.set(null);
-        this.checkInTimeValue.set('');
-        this.loadAttendances(this.activityId());
+        this.resetCheckInEditor();
+        this.reloadAttendances();
       },
       error: () => this.settingTimeId.set(null)
     });
@@ -100,19 +107,19 @@ export class ActivitiesAttendance implements OnInit {
     this.attendanceService.updateAttendanceStatus(attendanceId, status).subscribe({
       next: () => {
         this.updatingId.set(null);
-        this.loadAttendances(this.activityId());
+        this.reloadAttendances();
       },
       error: () => this.updatingId.set(null)
     });
   }
 
-  getStudentName(record: any): string {
+  getStudentName(record: AttendanceRecord): string {
     const user = record?.student?.user;
     if (!user) return '—';
     return `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email || '—';
   }
 
-  getStudentInitial(record: any): string {
+  getStudentInitial(record: AttendanceRecord): string {
     const user = record?.student?.user;
     return (user?.firstName?.[0] ?? user?.email?.[0] ?? 'S').toUpperCase();
   }
@@ -125,5 +132,39 @@ export class ActivitiesAttendance implements OnInit {
       PENDING: 'status-pending',
     };
     return map[status] ?? 'status-default';
+  }
+
+  private reloadAttendances(): void {
+    this.loadAttendances(this.activityId());
+  }
+
+  private resetCheckInEditor(): void {
+    this.editingTimeId.set(null);
+    this.checkInTimeValue.set('');
+  }
+
+  private finishLoading(): void {
+    this.loading.set(false);
+  }
+
+  private handleAttendancesLoadError(err: HttpErrorResponse): void {
+    if (err.status === 404) {
+      // No records yet, show empty state.
+      this.attendances.set([]);
+      this.error.set(null);
+      return;
+    }
+
+    if (err.status === 500) {
+      this.error.set(`Server error (500): ${err.error?.message ?? 'An internal server error occurred. Please check the backend.'}`);
+      return;
+    }
+
+    if (err.status === 0) {
+      this.error.set('Cannot reach the server.');
+      return;
+    }
+
+    this.error.set(`Error ${err.status}: ${err.error?.message ?? err.message}`);
   }
 }

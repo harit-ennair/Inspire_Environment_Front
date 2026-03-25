@@ -29,48 +29,39 @@ export class Profile implements OnInit {
   loadUserProfile(): void {
     const role = this.authService.getRole()?.toUpperCase();
     const userId = Number(this.authService.getUserId());
-    
-    // Initial data from session storage
+
     const sessionUser = {
       firstName: this.authService.getFirstName(),
       lastName: this.authService.getLastName(),
       email: this.authService.getEmail(),
-      role: role
+      role,
     };
-    
+
     if (sessionUser.firstName || sessionUser.lastName || sessionUser.email) {
       this.user.set(sessionUser);
     }
 
     if (!userId) {
-      console.warn('ProfileComponent: No userId found in session');
       this.loading.set(false);
       return;
     }
 
-    console.log('ProfileComponent: Fetching profile for', { role, userId });
-
-    const request = role === 'STUDENT' 
+    const request = role === 'STUDENT'
       ? this.studentsService.getStudentById(userId)
       : this.staffService.getStaffById(userId);
 
     request.subscribe({
       next: (data) => {
-        console.log('ProfileComponent: Data received', data);
-        // Handle both flat and nested structures (user vs user.user)
         const userData = data.user || data;
-        // Merge session data with API data to be safe
         this.user.set({ ...sessionUser, ...userData });
         this.loading.set(false);
       },
-      error: (err) => {
-        console.error('ProfileComponent: API Error', err);
-        // If we have session data, we don't necessarily want to show an error state
+      error: () => {
         if (!this.user()) {
           this.error.set('Failed to load profile information');
         }
         this.loading.set(false);
-      }
+      },
     });
   }
 

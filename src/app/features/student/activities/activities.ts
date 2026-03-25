@@ -20,11 +20,31 @@ export interface CalendarActivity {
   location?: string;
   description?: string;
   managedBy?: string;
-  attendances?: any[];
+  attendances?: ActivityAttendance[];
   presenceStatus?: string;
   checkInTime?: string;
   checkOutTime?: string;
 }
+
+interface ActivityAttendance {
+  student?: { id?: number };
+  status?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+}
+
+const TYPE_BADGE_CLASS: Record<string, string> = {
+  SESSION: 'badge-session',
+  WORKSHOP: 'badge-workshop',
+  VISIT: 'badge-visit',
+};
+
+const PRESENCE_CLASS: Record<string, string> = {
+  PRESENT: 'presence-present',
+  ABSENT: 'presence-absent',
+  LATE: 'presence-late',
+  PENDING: 'presence-pending',
+};
 
 @Component({
   selector: 'app-activities',
@@ -80,19 +100,7 @@ export class Activities implements OnInit {
 
     this.activitiesService.getActivitiesThisWeekByStudent(studentId).subscribe({
       next: (data: CalendarActivity[]) => {
-        // Extract presence from the attendances array already in each activity
-        const enriched = data.map(activity => {
-          const myAttendance = activity.attendances?.find(
-            (att: any) => att.student?.id === studentId
-          );
-          return {
-            ...activity,
-            presenceStatus: myAttendance?.status,
-            checkInTime: myAttendance?.checkInTime,
-            checkOutTime: myAttendance?.checkOutTime,
-          };
-        });
-        this.activities.set(enriched);
+        this.activities.set(this.addStudentPresence(data, studentId));
         this.loading.set(false);
       },
       error: () => {
@@ -105,12 +113,7 @@ export class Activities implements OnInit {
   getActivitiesForDay(day: WeekDay): CalendarActivity[] {
     return this.activities().filter(activity => {
       if (!activity.startDate) return false;
-      const actDate = new Date(activity.startDate);
-      return (
-        actDate.getFullYear() === day.date.getFullYear() &&
-        actDate.getMonth() === day.date.getMonth() &&
-        actDate.getDate() === day.date.getDate()
-      );
+      return this.isSameCalendarDay(new Date(activity.startDate), day.date);
     });
   }
 
@@ -121,34 +124,35 @@ export class Activities implements OnInit {
   }
 
   getTypeBadgeClass(type?: string): string {
-    switch (type?.toUpperCase()) {
-      case 'SESSION': return 'badge-session';
-      case 'WORKSHOP': return 'badge-workshop';
-      case 'VISIT': return 'badge-visit';
-      default: return 'badge-default';
-    }
+    return TYPE_BADGE_CLASS[this.normalizeKey(type)] ?? 'badge-default';
   }
 
   getPresenceClass(status?: string): string {
-    switch (status?.toUpperCase()) {
-      case 'PRESENT': return 'presence-present';
-      case 'ABSENT': return 'presence-absent';
-      case 'LATE': return 'presence-late';
-      case 'EXCUSED': return 'presence-excused';
-      case 'PENDING': return 'presence-pending';
-      default: return 'presence-none';
-    }
+    return PRESENCE_CLASS[this.normalizeKey(status)] ?? 'presence-none';
   }
 
-  getPresenceIcon(status?: string): string {
-    switch (status?.toUpperCase()) {
-      case 'PRESENT': return '✓';
-      case 'ABSENT': return '✗';
-      case 'LATE': return '⏱';
-      case 'EXCUSED': return '✎';
-      case 'PENDING': return '⏳';
-      default: return '—';
-    }
+  private addStudentPresence(data: CalendarActivity[], studentId: number): CalendarActivity[] {
+    return data.map(activity => {
+      const myAttendance = activity.attendances?.find(att => att.student?.id === studentId);
+      return {
+        ...activity,
+        presenceStatus: myAttendance?.status,
+        checkInTime: myAttendance?.checkInTime,
+        checkOutTime: myAttendance?.checkOutTime,
+      };
+    });
+  }
+
+  private normalizeKey(value?: string): string {
+    return value?.toUpperCase() ?? '';
+  }
+
+  private isSameCalendarDay(a: Date, b: Date): boolean {
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
   }
 
   private getMonday(d: Date): Date {

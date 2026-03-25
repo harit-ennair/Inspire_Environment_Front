@@ -34,7 +34,7 @@ export class ProfileForm implements OnInit {
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: [''],
-      confirmPassword: ['']
+      confirmPassword: [''],
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -53,15 +53,13 @@ export class ProfileForm implements OnInit {
   private currentUserData: any = null;
 
   loadUserData(): void {
-    // Initial pre-fill from auth service / session storage
     this.profileForm.patchValue({
       firstName: this.authService.getFirstName(),
       lastName: this.authService.getLastName(),
-      email: this.authService.getEmail()
+      email: this.authService.getEmail(),
     });
 
     if (!this.userId) {
-      console.warn('ProfileForm: No userId found');
       this.loading.set(false);
       return;
     }
@@ -72,76 +70,61 @@ export class ProfileForm implements OnInit {
 
     request.subscribe({
       next: (data) => {
-        console.log('ProfileForm: User data loaded', data);
         this.currentUserData = data;
-        // Handle both flat and nested structures (user vs user.user)
-        const userData = data.user || data;
+        const userData = data?.user ?? data;
         this.profileForm.patchValue({
           firstName: userData.firstName || this.authService.getFirstName(),
           lastName: userData.lastName || this.authService.getLastName(),
-          email: userData.email || this.authService.getEmail()
+          email: userData.email || this.authService.getEmail(),
         });
         this.loading.set(false);
       },
-      error: (err) => {
-        console.error('ProfileForm: Error loading user data', err);
+      error: () => {
         this.loading.set(false);
-      }
+      },
     });
   }
 
   onSubmit(): void {
     if (this.profileForm.invalid) {
-      console.warn('ProfileForm: Form is invalid', this.profileForm.errors);
+      this.profileForm.markAllAsTouched();
       return;
     }
 
     this.submitting.set(true);
     const formValue = this.profileForm.getRawValue();
-    
-    // Build the payload based on original data structure
+
     let payload: any = this.currentUserData ? { ...this.currentUserData } : {};
-    
+
     if (payload.user) {
-      // Nested structure (Staff/Student object containing a User object)
       payload.user.firstName = formValue.firstName;
       payload.user.lastName = formValue.lastName;
       payload.user.email = formValue.email;
       if (formValue.password) payload.user.password = formValue.password;
     } else {
-      // Flat structure
       payload.firstName = formValue.firstName;
       payload.lastName = formValue.lastName;
       payload.email = formValue.email;
       if (formValue.password) payload.password = formValue.password;
     }
 
-    const url = this.userRole === 'STUDENT'
-      ? `http://localhost:8080/api/students/${this.userId}`
-      : `http://localhost:8080/api/staff/${this.userId}`;
-      
-    console.log('ProfileForm: Sending update request to', url);
-    console.log('ProfileForm: Payload', payload);
-
     const request = this.userRole === 'STUDENT'
       ? this.studentsService.updateStudent(this.userId, payload)
       : this.staffService.updateStaff(this.userId, payload);
 
     request.subscribe({
-      next: (response) => {
-        console.log('ProfileForm: Update success', response);
+      next: () => {
         sessionStorage.setItem('firstName', formValue.firstName);
         sessionStorage.setItem('lastName', formValue.lastName);
         sessionStorage.setItem('email', formValue.email);
         sessionStorage.setItem('userName', `${formValue.firstName} ${formValue.lastName}`);
-        
+
         this.router.navigate(['../'], { relativeTo: this.route });
       },
       error: (err) => {
-        console.error('ProfileForm: Update error', err);
-        this.error.set(err.error?.message || 'Failed to update profile. Please check console.');
+        this.error.set(err.error?.message || 'Failed to update profile.');
         this.submitting.set(false);
-      }
+      },
     });
   }
 

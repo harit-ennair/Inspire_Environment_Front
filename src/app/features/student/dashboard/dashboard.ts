@@ -16,6 +16,8 @@ export class Dashboard implements OnInit {
   private presenceService = inject(PresenceService);
   private activitiesService = inject(ActivitiesService);
   private authService = inject(AuthService);
+  private readonly successTimeoutMs = 3000;
+  private readonly errorTimeoutMs = 4000;
 
   userName = this.authService.getUserName() || 'Student';
   today = new Date();
@@ -40,8 +42,8 @@ export class Dashboard implements OnInit {
   canCheckOut = computed(() => this.checkedIn() && !this.checkedOut() && !this.checkLoading());
 
   navItems = [
-    { label: 'Activities', icon: '📋', route: '/student/activities' },
-    { label: 'Presence', icon: '📍', route: '/student/presence' },
+    { label: 'Activities', route: '/student/activities' },
+    { label: 'Presence', route: '/student/presence' },
   ];
 
   ngOnInit(): void {
@@ -49,26 +51,47 @@ export class Dashboard implements OnInit {
     this.loadWeekActivities();
   }
 
-  private loadTodayPresence(): void {
+  private getUserId(): number | null {
     const userId = this.authService.getUserId();
-    if (!userId) return;
+    return userId ? Number(userId) : null;
+  }
 
-    this.presenceService.getPresencesByStudent(Number(userId)).subscribe({
+  private isToday(dateStr?: string): boolean {
+    if (!dateStr) return false;
+    return new Date(dateStr).toDateString() === new Date().toDateString();
+  }
+
+  private showSuccess(message: string): void {
+    this.checkSuccess.set(message);
+    setTimeout(() => this.checkSuccess.set(null), this.successTimeoutMs);
+  }
+
+  private showError(message: string): void {
+    this.checkError.set(message);
+    setTimeout(() => this.checkError.set(null), this.errorTimeoutMs);
+  }
+
+  private updateFromTodayPresence(presence: any): void {
+    this.todayPresence.set(presence);
+    this.checkedIn.set(true);
+    this.checkInTime.set(presence.checkInTime);
+
+    if (presence.checkOutTime) {
+      this.checkedOut.set(true);
+      this.checkOutTime.set(presence.checkOutTime);
+    }
+  }
+
+  private loadTodayPresence(): void {
+    const userId = this.getUserId();
+    if (userId === null) return;
+
+    this.presenceService.getPresencesByStudent(userId).subscribe({
       next: (presences: any[]) => {
-        const todayStr = new Date().toDateString();
-        const todayP = presences.find((p: any) => {
-          if (!p.checkInTime) return false;
-          return new Date(p.checkInTime).toDateString() === todayStr;
-        });
+        const todayP = presences.find((p: any) => this.isToday(p.checkInTime));
 
         if (todayP) {
-          this.todayPresence.set(todayP);
-          this.checkedIn.set(true);
-          this.checkInTime.set(todayP.checkInTime);
-          if (todayP.checkOutTime) {
-            this.checkedOut.set(true);
-            this.checkOutTime.set(todayP.checkOutTime);
-          }
+          this.updateFromTodayPresence(todayP);
         }
       },
       error: () => { }
@@ -76,11 +99,11 @@ export class Dashboard implements OnInit {
   }
 
   private loadWeekActivities(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
+    const userId = this.getUserId();
+    if (userId === null) return;
 
     this.activitiesLoading.set(true);
-    this.activitiesService.getActivitiesThisWeekByStudent(Number(userId)).subscribe({
+    this.activitiesService.getActivitiesThisWeekByStudent(userId).subscribe({
       next: (data: any[]) => {
         this.weekActivities.set(data.slice(0, 4));
         this.activitiesLoading.set(false);
@@ -90,47 +113,43 @@ export class Dashboard implements OnInit {
   }
 
   doCheckIn(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
+    const userId = this.getUserId();
+    if (userId === null) return;
 
     this.checkLoading.set(true);
     this.checkError.set(null);
 
-    this.presenceService.checkInPresence(Number(userId)).subscribe({
+    this.presenceService.checkInPresence(userId).subscribe({
       next: (res: any) => {
         this.checkedIn.set(true);
         this.checkInTime.set(res.checkInTime || new Date().toISOString());
-        this.checkSuccess.set('Check-in successful!');
+        this.showSuccess('Check-in successful!');
         this.checkLoading.set(false);
-        setTimeout(() => this.checkSuccess.set(null), 3000);
       },
       error: (err: any) => {
-        this.checkError.set(err.error?.message || 'Check-in failed. You may have already checked in today.');
+        this.showError(err.error?.message || 'Check-in failed. You may have already checked in today.');
         this.checkLoading.set(false);
-        setTimeout(() => this.checkError.set(null), 4000);
       }
     });
   }
 
   doCheckOut(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
+    const userId = this.getUserId();
+    if (userId === null) return;
 
     this.checkLoading.set(true);
     this.checkError.set(null);
 
-    this.presenceService.checkOutPresence(Number(userId)).subscribe({
+    this.presenceService.checkOutPresence(userId).subscribe({
       next: (res: any) => {
         this.checkedOut.set(true);
         this.checkOutTime.set(res.checkOutTime || new Date().toISOString());
-        this.checkSuccess.set('Check-out successful!');
+        this.showSuccess('Check-out successful!');
         this.checkLoading.set(false);
-        setTimeout(() => this.checkSuccess.set(null), 3000);
       },
       error: (err: any) => {
-        this.checkError.set(err.error?.message || 'Check-out failed.');
+        this.showError(err.error?.message || 'Check-out failed.');
         this.checkLoading.set(false);
-        setTimeout(() => this.checkError.set(null), 4000);
       }
     });
   }

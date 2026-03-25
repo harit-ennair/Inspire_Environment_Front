@@ -5,6 +5,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { StudentsService } from '../../../../core/services/api/students.service';
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
 
+type StudentFormData = {
+  studentCode: string;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    roleId: number | null;
+    departmentId: number | null;
+  };
+};
+
 @Component({
   selector: 'app-students-form',
   standalone: true,
@@ -13,6 +24,7 @@ import { DepartmentsService } from '../../../../core/services/api/departments.se
   styleUrls: ['./students.css'],
 })
 export class StudentsForm implements OnInit {
+  private readonly defaultStudentRoleId = 3;
 
   // Inject services
   private studentsService = inject(StudentsService);
@@ -21,16 +33,7 @@ export class StudentsForm implements OnInit {
   public router = inject(Router);
 
   // Signals
-  student = signal<any>({ 
-    studentCode: '',
-    user: {
-      firstName: '', 
-      lastName: '', 
-      email: '',
-      roleId: null,
-      departmentId: null
-    }
-  });
+  student = signal<StudentFormData>(this.createEmptyStudent());
   departments = signal<any[]>([]);
   loading = signal<boolean>(false);
   isEdit = signal<boolean>(false);
@@ -38,24 +41,49 @@ export class StudentsForm implements OnInit {
 
   ngOnInit(): void {
     this.loadDepartments();
-    
-    const paramId = this.route.snapshot.paramMap.get('id');
 
-    if (paramId) {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (Number.isFinite(id) && id > 0) {
       this.isEdit.set(true);
-      this.id.set(Number(paramId));
-      this.loadStudent(Number(paramId));
+      this.id.set(id);
+      this.loadStudent(id);
     }
+  }
+
+  private createEmptyStudent(): StudentFormData {
+    return {
+      studentCode: '',
+      user: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        roleId: null,
+        departmentId: null,
+      },
+    };
+  }
+
+  private normalizeStudent(data: any): StudentFormData {
+    const base = this.createEmptyStudent();
+    return {
+      studentCode: data?.studentCode ?? base.studentCode,
+      user: {
+        firstName: data?.user?.firstName ?? data?.firstName ?? base.user.firstName,
+        lastName: data?.user?.lastName ?? data?.lastName ?? base.user.lastName,
+        email: data?.user?.email ?? data?.email ?? base.user.email,
+        roleId: data?.user?.roleId ?? data?.roleId ?? base.user.roleId,
+        departmentId:
+          data?.user?.departmentId ?? data?.departmentId ?? base.user.departmentId,
+      },
+    };
   }
 
   loadDepartments() {
     this.departmentsService.getAllDepartments().subscribe({
-      next: (data) => {
-        this.departments.set(data);
-      },
+      next: (data) => this.departments.set(data),
       error: (err) => {
         console.error('Failed to load departments', err);
-      }
+      },
     });
   }
 
@@ -63,44 +91,31 @@ export class StudentsForm implements OnInit {
     this.loading.set(true);
     this.studentsService.getStudentById(id).subscribe({
       next: (data) => {
-        // Ensure the data structure matches our form
-        if (!data.user) {
-          data = {
-            studentCode: data.studentCode || '',
-            user: {
-              firstName: data.firstName || '',
-              lastName: data.lastName || '',
-              email: data.email || '',
-              roleId: data.roleId || null,
-              departmentId: data.departmentId || null
-            }
-          };
-        }
-        this.student.set(data);
+        this.student.set(this.normalizeStudent(data));
         this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
-      }
+      },
     });
   }
 
   save() {
-    const data = this.student();
-    
-    // Ensure roleId is set (default to student role if not set)
-    if (!data.user.roleId) {
-      data.user.roleId = 3; // Default student role ID - adjust as needed
-    }
+    const current = this.student();
+    const data: StudentFormData = {
+      ...current,
+      user: {
+        ...current.user,
+        roleId: current.user.roleId ?? this.defaultStudentRoleId,
+      },
+    };
 
-    if (this.isEdit()) {
-      this.studentsService.updateStudent(this.id()!, data).subscribe(() => {
-        this.router.navigate(['/admin/students']);
-      });
-    } else {
-      this.studentsService.createStudent(data).subscribe(() => {
-        this.router.navigate(['/admin/students']);
-      });
-    }
+    const request = this.isEdit() && this.id()
+      ? this.studentsService.updateStudent(this.id()!, data)
+      : this.studentsService.createStudent(data);
+
+    request.subscribe(() => {
+      this.router.navigate(['/admin/students']);
+    });
   }
 }

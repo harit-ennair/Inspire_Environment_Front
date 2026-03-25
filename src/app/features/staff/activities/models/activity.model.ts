@@ -1,4 +1,5 @@
-// ── Response shapes ──────────────────────────────────────────
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE' | string;
+export type ActivityType = 'SESSION' | 'VISIT' | 'WORKSHOP';
 
 export interface UserRef {
   id: number;
@@ -17,7 +18,7 @@ export interface AttendanceStudent {
 
 export interface Attendance {
   id: number;
-  status: 'PRESENT' | 'ABSENT' | 'LATE' | string;
+  status: AttendanceStatus;
   checkInTime?: string;
   student: AttendanceStudent;
 }
@@ -31,24 +32,21 @@ export interface StaffDetail {
 export interface Activity {
   id: number;
   title: string;
-  type?: 'SESSION' | 'VISIT' | 'WORKSHOP' | string;
-  startDate?: string;   // response field name
-  endDate?: string;     // response field name
-  managedBy?: string;   // display name in response
-  staff?: StaffDetail;  // single object in response
+  type?: ActivityType | string;
+  startDate?: string;
+  endDate?: string;
+  managedBy?: string;
+  staff?: StaffDetail;
   attendances?: Attendance[];
-  // optional extras some endpoints may return
   description?: string;
   location?: string;
   status?: string;
 }
 
-// ── Request payload (matches backend ActivityRequestDTO) ──────
-
 export interface ActivityPayload {
   title: string;
-  type: 'SESSION' | 'VISIT' | 'WORKSHOP';
-  startTime: string;   // LocalDateTime — e.g. "2026-03-01T10:00"
+  type: ActivityType;
+  startTime: string;
   endTime: string;
-  managedBy: number;   // Staff ID
+  managedBy: number;
 }

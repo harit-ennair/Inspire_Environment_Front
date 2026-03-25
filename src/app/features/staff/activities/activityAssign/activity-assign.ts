@@ -7,6 +7,16 @@ import { StudentsService } from '../../../../core/services/api/students.service'
 import { StaffService } from '../../../../core/services/api/staff.service';
 import { DepartmentsService } from '../../../../core/services/api/departments.service';
 import { Activity } from '../models/activity.model';
+import { Observable } from 'rxjs';
+
+type PersonLike = {
+  firstName?: string;
+  lastName?: string;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+  };
+};
 
 @Component({
   selector: 'app-activity-assign',
@@ -38,23 +48,11 @@ export class ActivityAssign implements OnInit {
 
   // Filtered lists
   filteredStudents = computed(() => {
-    const q = this.studentSearch().toLowerCase();
-    if (!q) return this.students();
-    return this.students().filter(s => {
-      const fn = (s.firstName || s.user?.firstName || '').toLowerCase();
-      const ln = (s.lastName || s.user?.lastName || '').toLowerCase();
-      return fn.includes(q) || ln.includes(q);
-    });
+    return this.filterByName(this.students(), this.studentSearch());
   });
 
   filteredStaff = computed(() => {
-    const q = this.staffSearch().toLowerCase();
-    if (!q) return this.staffList();
-    return this.staffList().filter(m => {
-      const fn = (m.firstName || m.user?.firstName || '').toLowerCase();
-      const ln = (m.lastName || m.user?.lastName || '').toLowerCase();
-      return fn.includes(q) || ln.includes(q);
-    });
+    return this.filterByName(this.staffList(), this.staffSearch());
   });
 
   // Selected IDs
@@ -88,20 +86,9 @@ export class ActivityAssign implements OnInit {
       }
     });
 
-    this.studentsService.getAllStudents().subscribe({
-      next: (data: any[]) => this.students.set(data),
-      error: () => {}
-    });
-
-    this.staffService.getAllStaffs().subscribe({
-      next: (data: any[]) => this.staffList.set(data),
-      error: () => {}
-    });
-
-    this.departmentsService.getAllDepartments().subscribe({
-      next: (data: any[]) => this.departments.set(data),
-      error: () => {}
-    });
+    this.loadSilent(this.studentsService.getAllStudents(), data => this.students.set(data));
+    this.loadSilent(this.staffService.getAllStaffs(), data => this.staffList.set(data));
+    this.loadSilent(this.departmentsService.getAllDepartments(), data => this.departments.set(data));
   }
 
   setTab(tab: 'student' | 'staff' | 'department'): void {
@@ -112,21 +99,15 @@ export class ActivityAssign implements OnInit {
   assignStudent(): void {
     const studentId = this.selectedStudentId();
     if (!studentId) return;
-    this.assigning.set(true);
-    this.activitiesService.assignStudentToActivity(this.activityId(), studentId).subscribe({
-      next: (updated: Activity) => {
-        this.activity.set(updated);
-        this.successMsg.set('Student assigned successfully.');
+    this.runAssign(
+      this.activitiesService.assignStudentToActivity(this.activityId(), studentId),
+      'Student assigned successfully.',
+      'Failed to assign student.',
+      () => {
         this.selectedStudentId.set(null);
         this.studentSearch.set('');
-        this.assigning.set(false);
-        this.autoClearSuccess();
-      },
-      error: () => {
-        this.error.set('Failed to assign student.');
-        this.assigning.set(false);
       }
-    });
+    );
   }
 
   removeStudent(studentId: number): void {
@@ -148,44 +129,72 @@ export class ActivityAssign implements OnInit {
   assignStaff(): void {
     const staffId = this.selectedStaffId();
     if (!staffId) return;
-    this.assigning.set(true);
-    this.activitiesService.assignStaffToActivity(this.activityId(), staffId).subscribe({
-      next: (updated: Activity) => {
-        this.activity.set(updated);
-        this.successMsg.set('Staff assigned successfully.');
+    this.runAssign(
+      this.activitiesService.assignStaffToActivity(this.activityId(), staffId),
+      'Staff assigned successfully.',
+      'Failed to assign staff.',
+      () => {
         this.selectedStaffId.set(null);
         this.staffSearch.set('');
-        this.assigning.set(false);
-        this.autoClearSuccess();
-      },
-      error: () => {
-        this.error.set('Failed to assign staff.');
-        this.assigning.set(false);
       }
-    });
+    );
   }
 
   assignDepartment(): void {
     const deptId = this.selectedDepartmentId();
     if (!deptId) return;
+    this.runAssign(
+      this.activitiesService.assignDepartmentToActivity(this.activityId(), deptId),
+      'Department assigned successfully.',
+      'Failed to assign department.',
+      () => this.selectedDepartmentId.set(null)
+    );
+  }
+
+  private autoClearSuccess(): void {
+    setTimeout(() => this.successMsg.set(null), 1000);
+  }
+
+  private filterByName<T extends PersonLike>(items: T[], query: string): T[] {
+    const q = query.toLowerCase();
+    if (!q) return items;
+
+    return items.filter(item => {
+      const firstName = (item.firstName || item.user?.firstName || '').toLowerCase();
+      const lastName = (item.lastName || item.user?.lastName || '').toLowerCase();
+      return firstName.includes(q) || lastName.includes(q);
+    });
+  }
+
+  private runAssign(
+    request: Observable<Activity>,
+    successMessage: string,
+    errorMessage: string,
+    onSuccess: () => void
+  ): void {
     this.assigning.set(true);
-    this.activitiesService.assignDepartmentToActivity(this.activityId(), deptId).subscribe({
+    this.clearMessages();
+
+    request.subscribe({
       next: (updated: Activity) => {
         this.activity.set(updated);
-        this.successMsg.set('Department assigned successfully.');
-        this.selectedDepartmentId.set(null);
+        this.successMsg.set(successMessage);
+        onSuccess();
         this.assigning.set(false);
         this.autoClearSuccess();
       },
       error: () => {
-        this.error.set('Failed to assign department.');
+        this.error.set(errorMessage);
         this.assigning.set(false);
       }
     });
   }
 
-  private autoClearSuccess(): void {
-    setTimeout(() => this.successMsg.set(null), 1000);
+  private loadSilent<T>(request: Observable<T>, onSuccess: (data: T) => void): void {
+    request.subscribe({
+      next: onSuccess,
+      error: () => {}
+    });
   }
 
   private clearMessages(): void {
