@@ -22,6 +22,8 @@ export class Profile implements OnInit {
   error = signal<string | null>(null);
   userName = this.authService.getUserName() || 'User';
 
+
+
   ngOnInit(): void {
     this.loadUserProfile();
   }

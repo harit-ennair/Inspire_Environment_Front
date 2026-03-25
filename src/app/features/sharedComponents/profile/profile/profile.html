@@ -2,27 +2,25 @@
 
   <!-- Hero Banner -->
   <div class="hero-banner">
-    <div class="hero-image">
-      <div class="hero-overlay"></div>
-    </div>
+    <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-badge">{{ today | date: 'EEEE, MMMM d, y' }}</div>
-      <h2 class="hero-welcome">Profile Overview</h2>
-      <h1 class="hero-title">{{ userName }}</h1>
+      <div class="hero-layout">
+        <div class="hero-info">
+          <div class="hero-badge">{{ today | date: 'EEEE, MMMM d, y' }}</div>
+          <h2 class="hero-welcome">Profile Overview</h2>
+          <h1 class="hero-title">{{ userName }}</h1>
+          <p class="hero-subtitle">Manage your personal information and track your performance.</p>
+        </div>
+      </div>
     </div>
   </div>
 
+
   <!-- Profile Content Area -->
   <div class="mission-section">
-    <div class="heading-style">
-      <h4 class="heading-label">Manage your account</h4>
-      <h2 class="heading-title">Account Overview</h2>
-    </div>
-    <div class="separator"></div>
-
     <div class="content-grid">
       <!-- User Info Panel -->
-      <div class="panel">
+      <div class="panel main-info">
         <div class="panel-header">
           <div class="heading-style">
             <h4 class="heading-label">Personal Information</h4>
@@ -53,13 +51,15 @@
         </div>
         } @else if (user()) {
         <div class="info-list">
-          <div class="info-item">
-            <span class="info-label">First Name</span>
-            <span class="info-value">{{ user().firstName || '---' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Last Name</span>
-            <span class="info-value">{{ user().lastName || '---' }}</span>
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-label">First Name</span>
+              <span class="info-value">{{ user().firstName || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Last Name</span>
+              <span class="info-value">{{ user().lastName || '---' }}</span>
+            </div>
           </div>
           <div class="info-item">
             <span class="info-label">Email Address</span>
@@ -73,27 +73,5 @@
         }
       </div>
 
-      <!-- Quick Stats / Additional Info Panel -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="heading-style">
-            <h4 class="heading-label">System Activity</h4>
-            <h2 class="heading-title">Membership</h2>
-          </div>
-        </div>
-        <div class="nav-grid">
-          <div class="nav-card">
-            <span class="nav-icon">📅</span>
-            <span class="nav-label">Member Since</span>
-            <span class="info-value small">{{ today | date:'mediumDate' }}</span>
-          </div>
-          <div class="nav-card">
-            <span class="nav-icon">🔒</span>
-            <span class="nav-label">Security</span>
-            <span class="info-value small">Active</span>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
-</div>
