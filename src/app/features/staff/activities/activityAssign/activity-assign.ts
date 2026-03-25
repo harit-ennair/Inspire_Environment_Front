@@ -104,6 +104,7 @@ export class ActivityAssign implements OnInit {
       'Student assigned successfully.',
       'Failed to assign student.',
       () => {
+        this.router.navigate(['/staff/activities', this.activityId()]);
         this.selectedStudentId.set(null);
         this.studentSearch.set('');
       }
@@ -134,6 +135,7 @@ export class ActivityAssign implements OnInit {
       'Staff assigned successfully.',
       'Failed to assign staff.',
       () => {
+        this.router.navigate(['/staff/activities', this.activityId()]);
         this.selectedStaffId.set(null);
         this.staffSearch.set('');
       }
@@ -147,7 +149,10 @@ export class ActivityAssign implements OnInit {
       this.activitiesService.assignDepartmentToActivity(this.activityId(), deptId),
       'Department assigned successfully.',
       'Failed to assign department.',
-      () => this.selectedDepartmentId.set(null)
+      () => {
+        this.router.navigate(['/staff/activities', this.activityId()]);
+        this.selectedDepartmentId.set(null);
+      }
     );
   }
 
