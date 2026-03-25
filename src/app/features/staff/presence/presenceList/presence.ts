@@ -63,7 +63,7 @@ export class Presence implements OnInit {
     return Array.from({ length: total }, (_, i) => i + 1);
   });
 
-  readonly STATUS_OPTIONS = ['PENDING', 'PRESENT', 'ABSENT', 'LATE', 'EXCUSED'];
+  readonly STATUS_OPTIONS = ['PENDING', 'PRESENT', 'ABSENT', 'LATE'];
 
   private toDateOnly(value: string): string {
     return new Date(value).toDateString();
@@ -103,6 +103,10 @@ export class Presence implements OnInit {
       (selectedName && presenceDepartmentName === selectedName) ||
       String(presenceDepartmentId) === this.departmentFilter
     );
+  }
+
+  onStatusChange(): void {
+    this.loadPresences();
   }
 
   private matchesStudent(presence: any): boolean {
@@ -237,7 +241,12 @@ export class Presence implements OnInit {
   loadPresences(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.presenceService.getAllPresences().subscribe({
+
+    const request = this.statusFilter 
+      ? this.presenceService.getPresencesByStatus(this.statusFilter)
+      : this.presenceService.getAllPresences();
+
+    request.subscribe({
       next: (data) => {
         this.presences.set(data);
         this.applyFilters();
@@ -274,7 +283,6 @@ export class Presence implements OnInit {
       PRESENT: 'badge-present',
       ABSENT: 'badge-absent',
       LATE: 'badge-late',
-      EXCUSED: 'badge-excused',
     };
     return map[status] ?? 'badge-default';
   }

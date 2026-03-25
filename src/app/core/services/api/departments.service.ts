@@ -20,11 +20,6 @@ export class DepartmentsService {
     return this.http.get(`${this.departmentsApi}/${id}`);
   }
 
-  //********************
-  getDepartmentByName(name: string): Observable<any> {
-    return this.http.get(`${this.departmentsApi}/name/${name}`);
-  }
-
   createDepartment(data: any): Observable<any> {
     return this.http.post(this.departmentsApi, data);
   }

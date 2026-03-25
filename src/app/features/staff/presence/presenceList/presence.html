@@ -101,7 +101,7 @@
         }
       </select>
 
-      <select class="filter-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <select class="filter-select" [(ngModel)]="statusFilter" (change)="onStatusChange()">
         <option value="">All Statuses</option>
         @for (s of STATUS_OPTIONS; track s) {
         <option [value]="s">{{ s }}</option>

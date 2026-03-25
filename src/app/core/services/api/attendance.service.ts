@@ -12,22 +12,12 @@ export class AttendanceService {
 
   constructor(private http: HttpClient) {}
 
-//********************
-  checkInAttendance(activityId: number, studentId: number): Observable<any> {
-    return this.http.post(`${this.attendanceApi}/check-in?activityId=${activityId}&studentId=${studentId}`, {});
-  }
-
   updateAttendanceStatus(attendanceId: number, status: string): Observable<any> {
     return this.http.put(`${this.attendanceApi}/${attendanceId}/status?status=${status}`, {});
   }
 
   getAttendancesByActivity(activityId: number): Observable<any> {
     return this.http.get(`${this.attendanceApi}/activity/${activityId}`);
-  }
-
-  //********************
-  getAttendancesByStudent(studentId: number): Observable<any> {
-    return this.http.get(`${this.attendanceApi}/student/${studentId}`);
   }
 
   setCheckInTime(attendanceId: number, checkInTime: string): Observable<any> {

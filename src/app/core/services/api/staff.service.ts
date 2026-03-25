@@ -32,13 +32,4 @@ export class StaffService {
     return this.http.get(this.staffApi);
   }
 
-  //********************
-  getStaffsByDepartment(departmentId: number): Observable<any> {
-    return this.http.get(`${this.staffApi}/department/${departmentId}`);
-  }
-
-  //********************
-  getManagedActivities(staffId: number): Observable<any> {
-    return this.http.get(`${this.staffApi}/${staffId}/activities`);
-  }
 }

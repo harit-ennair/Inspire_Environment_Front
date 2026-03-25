@@ -20,11 +20,6 @@ export class StudentsService {
     return this.http.get(this.studentsApi);
   }
 
-  //********************
-  getStudentsByDepartment(departmentId: number): Observable<any> {
-    return this.http.get(`${this.studentsApi}/department/${departmentId}`);
-  }
-
   createStudent(data: any): Observable<any> {
     return this.http.post(this.studentsApi, data);
   }
@@ -37,13 +32,4 @@ export class StudentsService {
     return this.http.delete(`${this.studentsApi}/${id}`);
   }
 
-  //********************
-  getStudentActivities(studentId: number): Observable<any> {
-    return this.http.get(`${this.studentsApi}/${studentId}/activities`);
-  }
-
-  //********************
-  getStudentAttendances(studentId: number): Observable<any> {
-    return this.http.get(`${this.studentsApi}/${studentId}/attendances`);
-  }
 }
