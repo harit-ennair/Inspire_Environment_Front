@@ -96,21 +96,6 @@ export class ActivityAssign implements OnInit {
     this.clearMessages();
   }
 
-  assignStudent(): void {
-    const studentId = this.selectedStudentId();
-    if (!studentId) return;
-    this.runAssign(
-      this.activitiesService.assignStudentToActivity(this.activityId(), studentId),
-      'Student assigned successfully.',
-      'Failed to assign student.',
-      () => {
-        this.router.navigate(['/staff/activities', this.activityId()]);
-        this.selectedStudentId.set(null);
-        this.studentSearch.set('');
-      }
-    );
-  }
-
   removeStudent(studentId: number): void {
     this.removing.set(studentId);
     this.activitiesService.removeStudentFromActivity(this.activityId(), studentId).subscribe({
@@ -125,6 +110,21 @@ export class ActivityAssign implements OnInit {
         this.removing.set(null);
       }
     });
+  }
+  
+  assignStudent(): void {
+    const studentId = this.selectedStudentId();
+    if (!studentId) return;
+    this.runAssign(
+      this.activitiesService.assignStudentToActivity(this.activityId(), studentId),
+      'Student assigned successfully.',
+      'Failed to assign student.',
+      () => {
+        this.router.navigate(['/staff/activities', this.activityId()]);
+        this.selectedStudentId.set(null);
+        this.studentSearch.set('');
+      }
+    );
   }
 
   assignStaff(): void {

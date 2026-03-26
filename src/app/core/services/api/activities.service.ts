@@ -42,8 +42,8 @@ export class ActivitiesService {
     return this.http.get(`${this.activitiesApi}/student/${studentId}`);
   }
 
-  getActivitiesManagedBy(staffEmail: string): Observable<any> {
-    return this.http.get(`${this.activitiesApi}/managed-by/${staffEmail}`);
+  getActivitiesManagedBy(managedById : number): Observable<any> {
+    return this.http.get(`${this.activitiesApi}/managed-by/${managedById }`);
   }
 
   getActivitiesByDepartment(departmentId: number): Observable<any> {

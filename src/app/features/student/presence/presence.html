@@ -99,7 +99,7 @@
         </div>
         } @else {
         <div class="records-list">
-            @for (p of filteredPresences(); track p.id) {
+            @for (p of paginatedPresences(); track p.id) {
             <div class="record-card">
                 <div class="record-status-stripe" [ngClass]="getStatusClass(p.status)"></div>
                 <div class="record-body">
@@ -138,6 +138,30 @@
             </div>
             }
         </div>
+
+        @if (filteredPresences().length > 0) {
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing {{ pageStart() }}-{{ pageEnd() }} of {{ filteredPresences().length }} records
+            </div>
+
+            @if (totalPages() > 1) {
+            <div class="pagination-controls">
+                <button class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">Prev</button>
+
+                <div class="page-numbers">
+                    @for (page of pageNumbers(); track page) {
+                    <button class="page-num" [class.active]="page === currentPage()" (click)="goToPage(page)">
+                        {{ page }}
+                    </button>
+                    }
+                </div>
+
+                <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="nextPage()">Next</button>
+            </div>
+            }
+        </div>
+        }
         }
     </div>
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ActivitiesService } from '../../../../core/services/api/activities.service';
 import { StaffService } from '../../../../core/services/api/staff.service';
 import { Activity } from '../models/activity.model';
@@ -16,39 +16,48 @@ import { Activity } from '../models/activity.model';
 export class ActivitiesManagedByStaff implements OnInit {
   private activitiesService = inject(ActivitiesService);
   private staffService = inject(StaffService);
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   staffList = signal<any[]>([]);
   activities = signal<Activity[]>([]);
-  selectedEmail = signal<string>('');
+  selectedStaffId = signal<number | null>(null);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
   ngOnInit(): void {
-    const emailParam = this.route.snapshot.paramMap.get('email');
     this.staffService.getAllStaffs().subscribe({
       next: (data: any[]) => {
         this.staffList.set(data);
-        if (emailParam) {
-          this.selectedEmail.set(emailParam);
-          this.loadActivities(emailParam);
-        }
       },
       error: () => {}
     });
   }
 
-  onStaffChange(email: string): void {
-    this.selectedEmail.set(email);
-    this.loadActivities(email);
+  onStaffChange(staffIdValue: string): void {
+    if (!staffIdValue) {
+      this.selectedStaffId.set(null);
+      this.activities.set([]);
+      this.error.set(null);
+      this.loading.set(false);
+      return;
+    }
+
+    const staffId = Number(staffIdValue);
+    if (Number.isNaN(staffId)) {
+      this.selectedStaffId.set(null);
+      this.error.set('Selected staff member is invalid.');
+      this.activities.set([]);
+      return;
+    }
+
+    this.selectedStaffId.set(staffId);
+    this.loadActivities(staffId);
   }
 
-  loadActivities(email: string): void {
-    if (!email) return;
+  loadActivities(staffId: number): void {
     this.loading.set(true);
     this.error.set(null);
-    this.activitiesService.getActivitiesManagedBy(email).subscribe({
+    this.activitiesService.getActivitiesManagedBy(staffId).subscribe({
       next: (data: Activity[]) => {
         this.activities.set(data);
         this.loading.set(false);

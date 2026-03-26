@@ -147,9 +147,8 @@
     <div class="activity-card">
       <!-- Card Top -->
       <div class="card-top">
-        <span class="activity-type">{{ activity.type || 'Activity' }}</span>
         <span class="status-badge" [class]="'status-' + (activity.status?.toLowerCase() || 'active')">
-          {{ activity.status || 'Active' }}
+          {{ activity.type || 'Activity' }}
         </span>
       </div>
 

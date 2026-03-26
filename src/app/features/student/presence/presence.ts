@@ -27,6 +27,8 @@ export class Presence implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   filterStatus = signal<string>('ALL');
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(8);
 
   readonly STATUS_FILTERS: Array<'ALL' | PresenceStatus> = [
     'ALL',
@@ -56,6 +58,30 @@ export class Presence implements OnInit {
     return [...filtered].sort((a, b) => this.toTimestamp(b.checkInTime) - this.toTimestamp(a.checkInTime));
   });
 
+  totalPages = computed(() => {
+    const total = Math.ceil(this.filteredPresences().length / this.pageSize());
+    return Math.max(1, total);
+  });
+
+  pageNumbers = computed(() => {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
+  });
+
+  paginatedPresences = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredPresences().slice(start, end);
+  });
+
+  pageStart = computed(() => {
+    if (this.filteredPresences().length === 0) return 0;
+    return (this.currentPage() - 1) * this.pageSize() + 1;
+  });
+
+  pageEnd = computed(() => {
+    return Math.min(this.currentPage() * this.pageSize(), this.filteredPresences().length);
+  });
+
   ngOnInit(): void {
     this.loadPresences();
   }
@@ -73,6 +99,7 @@ export class Presence implements OnInit {
     this.presenceService.getPresencesByStudent(Number(userId)).subscribe({
       next: (data: PresenceRecord[]) => {
         this.presences.set(data ?? []);
+        this.currentPage.set(1);
         this.loading.set(false);
       },
       error: () => {
@@ -84,6 +111,25 @@ export class Presence implements OnInit {
 
   setFilter(status: string): void {
     this.filterStatus.set(status);
+    this.currentPage.set(1);
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update((p) => p + 1);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update((p) => p - 1);
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
   }
 
   formatDateTime(dateStr?: string): string {
