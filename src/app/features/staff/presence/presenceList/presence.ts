@@ -31,7 +31,6 @@ export class Presence implements OnInit {
   loading           = signal<boolean>(true);
   error             = signal<string | null>(null);
   deleteSuccess     = signal<string | null>(null);
-  updateSuccess     = signal<string | null>(null);
   
   // Pagination
   currentPage = signal<number>(1);
@@ -65,12 +64,30 @@ export class Presence implements OnInit {
 
   readonly STATUS_OPTIONS = ['PENDING', 'PRESENT', 'ABSENT', 'LATE'];
 
+  private normalizeStudent(student: any): any {
+    if (!student.user) return student;
+    return {
+      ...student,
+      firstName: student.user.firstName,
+      lastName: student.user.lastName,
+      departmentId: student.user.departmentId ?? student.departmentId,
+      departmentName: student.user.departmentName ?? student.departmentName,
+    };
+  }
+
   private toDateOnly(value: string): string {
     return new Date(value).toDateString();
   }
 
   private extractStudentName(student: any): string {
     return `${student.firstName} ${student.lastName}`.toLowerCase();
+  }
+
+  private clearStudentSelection(): void {
+    this.studentFilter = '';
+    this.studentSearch = '';
+    this.studentSuggestions.set([]);
+    this.showSuggestions = false;
   }
 
   private refreshStudentOptions(): void {
@@ -129,12 +146,7 @@ export class Presence implements OnInit {
       students:    this.studentsService.getAllStudents(),
     }).subscribe({
       next: ({ presences, departments, students }) => {
-        // Normalise students that may have a nested `user` object
-        const normalised = students.map((s: any) =>
-          s.user ? { ...s, firstName: s.user.firstName, lastName: s.user.lastName,
-                      departmentId: s.user.departmentId ?? s.departmentId,
-                      departmentName: s.user.departmentName ?? s.departmentName } : s
-        );
+        const normalised = students.map((student: any) => this.normalizeStudent(student));
         this.presences.set(presences);
         this.departments.set(departments);
         this.allStudents.set(normalised);
@@ -150,10 +162,7 @@ export class Presence implements OnInit {
   }
 
   onDepartmentChange(): void {
-    this.studentFilter = '';
-    this.studentSearch = '';
-    this.studentSuggestions.set([]);
-    this.showSuggestions = false;
+    this.clearStudentSelection();
     this.refreshStudentOptions();
     this.applyFilters();
   }
@@ -182,10 +191,7 @@ export class Presence implements OnInit {
   }
 
   clearStudentSearch(): void {
-    this.studentSearch = '';
-    this.studentFilter = '';
-    this.studentSuggestions.set([]);
-    this.showSuggestions = false;
+    this.clearStudentSelection();
     this.applyFilters();
   }
 
@@ -208,14 +214,11 @@ export class Presence implements OnInit {
 
   resetFilters(): void {
     this.departmentFilter = '';
-    this.studentFilter    = '';
-    this.studentSearch    = '';
     this.dateFilter       = '';
     this.statusFilter     = '';
     this.activeOnly       = false;
     this.refreshStudentOptions();
-    this.studentSuggestions.set([]);
-    this.showSuggestions  = false;
+    this.clearStudentSelection();
     this.applyFilters();
   }
 
